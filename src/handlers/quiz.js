@@ -247,28 +247,40 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
   function checkAnswers() {
     p.score = { total: 0, correct: 0 };
-    pepdoc.each('['+k.ANSWER_ATTR+']', checkAnswer);
+    var fsets = quizForm.querySelectorAll('fieldset');
+    if (!fsets.length) { fsets = [quizForm]; }
+    pepdoc.iterate(fsets, checkAnswer);
     publishScore();
   }
 
 
-  function checkAnswer(field) {
+  function checkAnswer(fset) {
     p.score.total += 1;
-    var qElem = questionForField(field);
-
     var correctIf = function (bool) {
       p.score.correct += bool ? 1 : 0;
-      qElem.setAttribute('x-pep-quiz-marked', bool ? 'correct' : 'incorrect');
+      fset.setAttribute('x-pep-quiz-marked', bool ? 'correct' : 'incorrect');
     }
-    if (hasSelectTrigger(field)) {
-      correctIf(field.classList.contains(k.SELECT_KLS));
-    } else if (field.type == 'radio' || field.type == 'checkbox') {
-      pepdoc.each(p.qSel+' [name="'+field.name+'"]:checked', selectAnswer);
-      correctIf(field.checked);
+    var answers = fset.querySelectorAll('['+k.ANSWER_ATTR+']');
+    var answer = answers[0];
+    if (!answer) {
+      console.warn('No answer for field set:', fset);
+      correctIf(false);
+    } else if (hasSelectTrigger(answer)) {
+      correctIf(answer.classList.contains(k.SELECT_KLS));
+    } else if (answer.type == 'radio') {
+      var fields = fset.querySelectorAll('input[type="radio"]:checked');
+      pepdoc.iterate(fields, selectAnswer);
+      correctIf(answer.checked);
+    } else if (answer.type == 'checkbox') {
+      var fields = fset.querySelectorAll('input[type="checkbox"]:checked');
+      pepdoc.iterate(fields, selectAnswer);
+      var y = true;
+      pepdoc.iterate(answers, function (chk) { y = y && chk.checked; });
+      correctIf(y);
     } else {
-      selectAnswer(field);
-      var val = field.value.trim();
-      var ans = field.getAttribute(k.ANSWER_ATTR).trim();
+      selectAnswer(answer);
+      var val = answer.value.trim();
+      var ans = answer.getAttribute(k.ANSWER_ATTR).trim();
       // Will be case-insensitive if answer is all-lowercase.
       if (ans.match(/^[^A-Z]*$/)) { val = val.toLowerCase(); }
       correctIf(val === ans);
@@ -276,8 +288,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   }
 
 
-  function questionForField(field) {
-    var qElem = field.parentNode;
+  function questionFor(elem) {
+    var qElem = elem;
     while (qElem && qElem != quizForm && qElem.tagName != 'FIELDSET') {
       qElem = qElem.parentNode;
     }
@@ -336,8 +348,11 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     var kls = 'pep-quiz-focus';
     pepdoc.each(p.qSel+' .'+kls, function (fg) { fg.classList.remove(kls); });
     if (elem) {
+      var scrollToTop = (elem.offsetHeight == 0);
       elem.classList.add(kls);
-      elem.ownerDocument.defaultView.scrollTo(0, 0);
+      if (scrollToTop) {
+        elem.ownerDocument.defaultView.scrollTo(0, 0);
+      }
     }
   }
 
@@ -367,7 +382,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
 
     select: function (sender) {
-      var qElem = questionForField(sender);
+      var qElem = questionFor(sender);
       qElem.removeAttribute('x-pep-quiz-marked');
       var fields = qElem.querySelectorAll('.'+k.SELECT_KLS);
       for (var i = 0, ii = fields.length; i < ii; ++i) {

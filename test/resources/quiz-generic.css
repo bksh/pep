@@ -4,6 +4,11 @@ fieldset {
   margin-bottom: 1em;
 }
 
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
 .senderChoice {
   float: left;
   text-align: center;

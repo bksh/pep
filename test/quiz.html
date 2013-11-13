@@ -148,30 +148,30 @@
 <!-- CONVENTION: START -->
 <form class="pep-quiz" x-pep-quiz-stylesheet="resources/quiz-generic.css">
   <fieldset>
+    <p>English uses which alphabet?</p>
+    <label><input type="radio" />Arabic</label>
+    <label><input type="radio" />Cyrillic</label>
+    <label><input type="radio" />Greek</label>
+    <label><input type="radio" />Hebrew</label>
+    <label><input type="radio" x-pep-quiz-answer />Latin</label>
+  </fieldset>
+  <fieldset>
     <label>
-      How many letters are there in the alphabet?<br />
+      How many characters are in the alphabet?
       <select x-pep-quiz-answer="26">
         <option>22</option>
-        <option>256</option>
         <option>26</option>
+        <option>256</option>
       </select>
     </label>
   </fieldset>
   <fieldset>
-    <p>English uses which alphabet?</p>
-    <label><input type="radio" x-pep-quiz-answer />Latin</label>
-    <label><input type="radio" />Cyrillic</label>
-    <label><input type="radio" />Arabic</label>
-    <label><input type="radio" />Greek</label>
-    <label><input type="radio" />Hebrew</label>
-  </fieldset>
-  <fieldset>
     <p>Which of these characters is a vowel?</p>
-    <label><input type="checkbox" x-pep-answer />A</label>
+    <label><input type="checkbox" x-pep-quiz-answer />A</label>
     <label><input type="checkbox" />B</label>
     <label><input type="checkbox" />C</label>
     <label><input type="checkbox" />D</label>
-    <label><input type="checkbox" x-pep-answer />E</label>
+    <label><input type="checkbox" x-pep-quiz-answer />E</label>
     <label><input type="checkbox" />F</label>
   </fieldset>
   <fieldset>
@@ -182,8 +182,8 @@
   </fieldset>
   <fieldset>
     <label>
-      What is the first character in the alphabet?<br />
-      <input type="text" x-pep-quiz-answer="a" />
+      What is the first character in the alphabet?
+      <input type="text" max-length="1" size="1" x-pep-quiz-answer="a" />
     </label>
   </fieldset>
   <fieldset>
@@ -195,7 +195,7 @@
 </form>
 <!-- CONVENTION: END -->
 
-  </div>
+    </div>
 
 
 
@@ -222,42 +222,46 @@
 
 
 
-  <h2>Additional quiz options</h2>
+    <h2>Additional quiz options</h2>
 
-  <p>
-    A quiz form can also take a few HTML5 attributes to tailor its appearance and behavior. Currently they are:
+    <p>
+      A quiz form can also take a few HTML5 attributes to tailor its appearance and behavior. Currently they are:
 
-    x-pep-quiz-name - the ‘name’ of the quiz, used in various parts of the UI (default: Quiz)
-    x-pep-quiz-stylesheet - a special stylesheet that can be used to completely customize the display of the quiz (default: a stylesheet supplied by the reading system)
-  </p>
-
-
-  <h2>Focusing on one question</h2>
-  <p>
-    ...
-  </p>
+      x-pep-quiz-name - the ‘name’ of the quiz, used in various parts of the UI (default: Quiz)
+      x-pep-quiz-stylesheet - a special stylesheet that can be used to completely customize the display of the quiz (default: a stylesheet supplied by the reading system)
+    </p>
 
 
-  <h2>Scoring</h2>
-  <p>
-    - styling the generated scoreboard
-    - using your own scoreboard
-    - using quiz data elsewhere
-    - showing wrong answers
-  </p>
+    <h2>Focusing on one question</h2>
+    <p>
+      ...
+    </p>
 
 
-  <h2>Quiz senders</h2>
-  <p>
-  - reset
-  - close
-  - jump
-  - start
-  - select
-  - check
-  - next
-  - previous
-  </p>
+    <h2>Scoring</h2>
+    <p>
+      - styling the generated scoreboard
+      - using your own scoreboard
+      - using quiz data elsewhere
+      - showing wrong answers
+    </p>
+
+    <p>
+      On submit, each fieldset is assigned an attribute of
+      <code>x-pep-quiz-marked="correct|incorrect"</code>.
+    </p>
+
+    <h2>Quiz senders</h2>
+    <p>
+    - reset
+    - close
+    - jump
+    - start
+    - select
+    - check
+    - next
+    - previous
+    </p>
 
 
 <!-- CONVENTION: START -->
@@ -298,11 +302,6 @@
 <!-- CONVENTION: END -->
 
     </div>
-
-    <p>
-      On submit, each fieldset is assigned an attribute of
-      <code>x-pep-quiz-marked="correct|incorrect"</code>.
-    </p>
   </body>
 
   <script>InspectConventions();</script>

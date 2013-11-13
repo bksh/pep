@@ -2,7 +2,7 @@ Pep.Document = function (doc) {
   var API = { origin: doc };
 
 
-  function iterate(elems, iterator) {
+  API.iterate = function (elems, iterator) {
     if (typeof iterator == 'function') {
       for (var i = 0, ii = elems.length; i <ii; ++i) { iterator(elems[i], i); }
     }
@@ -11,7 +11,7 @@ Pep.Document = function (doc) {
 
 
   API.each = function (selector, iterator) {
-    return iterate(doc.querySelectorAll(selector), iterator);
+    return API.iterate(doc.querySelectorAll(selector), iterator);
   }
 
 
@@ -95,7 +95,7 @@ Pep.Document = function (doc) {
     var val = sender.getAttribute('x-pep-send');
     var rec = 'unknown';
     // Split up the messages.
-    iterate(val.split(/\s/), function (str) {
+    API.iterate(val.split(/\s/), function (str) {
       if (str.match(/^#/)) {
         rec = str;
       } else {
@@ -105,7 +105,7 @@ Pep.Document = function (doc) {
     });
 
     // Resolve the receiver for each message.
-    iterate(msgs, function (msg) {
+    API.iterate(msgs, function (msg) {
       msg.receiver = resolveReceiver(sender, msg.receiver, msg.action);
     });
     return msgs;
@@ -143,7 +143,7 @@ Pep.Document = function (doc) {
     }
     var elems = [];
     // TODO
-    return iterate(elems, iterator);
+    return API.iterate(elems, iterator);
   }
 
 
