@@ -1,0 +1,20 @@
+fieldset {
+  border: none;
+  border-bottom: 1px dotted #CCC;
+  margin-bottom: 1em;
+}
+
+.senderChoice {
+  float: left;
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  font: bold 32px/80px Arial Black, sans-serif;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.senderChoice.pep-quiz-selected {
+  color: blue;
+  background: #CCF;
+}
