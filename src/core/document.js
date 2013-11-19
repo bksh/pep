@@ -93,14 +93,13 @@ Pep.Document = function (doc) {
   API.messages = function (sender) {
     var msgs = [];
     var val = sender.getAttribute('x-pep-send');
-    var rec = 'unknown';
+    var rec = '[unknown]';
     // Split up the messages.
-    API.iterate(val.split(/\s/), function (str) {
-      if (str.match(/^#/)) {
+    val.replace(/([^\s\(]+)(\(([^\)]*)\))?/g, function (m, str, parens, args) {
+      if (!args && str.match(/^#/)) {
         rec = str;
       } else {
-        var ptn = str.match(/([^\(]+)(\(([^\)]*)\))?/);
-        msgs.push({ 'receiver': rec, 'action': ptn[1], 'arguments': ptn[3] });
+        msgs.push({ 'receiver': rec, 'action': str, 'arguments': args });
       }
     });
 
@@ -114,7 +113,7 @@ Pep.Document = function (doc) {
 
   function resolveReceiver(sender, recStr, action) {
     var rec;
-    if (recStr == 'unknown') {
+    if (recStr == '[unknown]') {
       var cursor = sender;
       while (cursor) {
         if (cursor.xPepTarget) {
@@ -127,30 +126,27 @@ Pep.Document = function (doc) {
     } else {
       rec = doc.querySelector(recStr);
     }
-    if (!rec) { return; }
-    var tgt = rec.xPepTarget;
-    if (!tgt) { return; }
-    return (typeof tgt[action] == 'function') ? rec : 'global';
+    return rec;
   }
 
 
   // TODO: implement and document!
   //
-  API.bindings = function (label, iterator) {
-    if (arguments.length == 1 && typeof arguments[0] == 'function') {
-      iterator = arguments[0];
-      label = null;
-    }
-    var elems = [];
-    // TODO
-    return API.iterate(elems, iterator);
-  }
+  // API.bindings = function (label, iterator) {
+  //   if (arguments.length == 1 && typeof arguments[0] == 'function') {
+  //     iterator = arguments[0];
+  //     label = null;
+  //   }
+  //   var elems = [];
+  //   // TODO
+  //   return API.iterate(elems, iterator);
+  // }
 
 
   API.updateBindings = function () {
     var data = Pep.allData();
-    API.each('[x-pep-data]', function (bnd) {
-      var k = bnd.getAttribute('x-pep-data');
+    API.each('[x-pep-data-text]', function (bnd) {
+      var k = bnd.getAttribute('x-pep-data-text');
       bnd.innerHTML = data[k];
     });
     API.each('[x-pep-data-attr]', function (bnd) {

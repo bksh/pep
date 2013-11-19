@@ -2,11 +2,18 @@
 <html>
   <head>
     <title>Pep test - Youtube</title>
-    <link rel="stylesheet" href="test.css" />
+
+    <!-- This is what you would include for Pep. -->
     <script src="../src/core/pep.js"></script>
     <script src="../src/core/document.js"></script>
+    <script src="../src/core/actions.js"></script>
     <script src="../src/core/generate.js"></script>
     <script src="../src/handlers/youtube.js" x-pep="youtube"></script>
+    <style>.if-pep-youtube { display: none; }</style>
+
+    <!-- Resources to enable the test - not relevant for implementations.-->
+    <link rel="stylesheet" href="resources/test.css" />
+    <script src="resources/conventions.js"></script>
     <script>window.onload = function () { Pep.attach(document); };</script>
   </head>
   <body>
@@ -17,11 +24,11 @@
       eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper.
       Aenean ultricies mi vitae est. Mauris placerat eleifend leo.
     </p>
-    <p>
-      <!-- CONVENTION:STARTS-->
-      <span x-pep-youtube="5e9LN3_AUys">Play video</span>.
-      <!-- CONVENTION:ENDS -->
-    </p>
+    <div class="convention">
+<!-- CONVENTION:STARTS-->
+<span x-pep-youtube="5e9LN3_AUys">Play video</span>.
+<!-- CONVENTION:ENDS -->
+    </div>
     <p>
       Pellentesque habitant morbi tristique senectus et netus et malesuada
       fames ac turpis egestas.
@@ -33,4 +40,5 @@
       ipsum rutrum orci, sagittis tempus lacus enim ac dui.
     </p>
   </body>
+  <script>InspectConventions();</script>
 </html>

@@ -151,8 +151,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
       p.scoreboard = doc.createElement('div');
       p.scoreboard.className = 'pep-quiz-scoreboard';
       p.scoreboard.innerHTML = [
-        'You scored <span x-pep-data="quiz-score-correct"></span>',
-        'out of <span x-pep-data="quiz-score-total"></span>'
+        'You scored <span x-pep-data-text="quiz-score-correct"></span>',
+        'out of <span x-pep-data-text="quiz-score-total"></span>'
       ].join('\n');
       quizForm.appendChild(p.scoreboard);
     }
@@ -281,8 +281,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   // x-pep-data="quiz-score-correct-quizNascar").
   //
   // This is nice because it requires zero changes in Pep core. But it is
-  // harder for x-pep-data-if expressions... And besides, this seems like
-  // it will be a common problem, requiring a standard solution.
+  // harder for x-pep-data-condition expressions... And besides, this seems
+  // like it will be a common problem, requiring a standard solution.
   //
   function publishScore() {
     //console.log("%s: %s out of %s", p.name, p.score.correct, p.score.total);

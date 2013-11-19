@@ -21,6 +21,7 @@ Pep = (function () {
 
 
   // Iterate over each convention in registry and invoke the handler.
+  //
   function attachConventions(pepdoc) {
     for (var conv in registry) {
       if (registry.hasOwnProperty(conv)) {
@@ -36,24 +37,33 @@ Pep = (function () {
   }
 
 
+  // Recurse through the messages, invoking the appropriate action for each.
+  //
   function send(sender, msgs) {
-    //console.log("SEND: %o FROM %o", msgs, sender);
     msgs = msgs.slice(0);
     var next = function () { recurse(msgs.shift()) };
     var recurse = function (m) {
-      if (m) {
-        if (m.receiver == 'global') {
-          if (m.action == 'wait') {
-            setTimeout(next, parseInt(m.arguments, 10));
-          } else {
-            console.warn('PEP: unknown global action: '+m.action);
-            next();
-          }
-        } else {
-          m.receiver.xPepTarget[m.action](sender, m.receiver, m.arguments);
-          next();
-        }
+      if (!m) { return; }
+      console.log(
+        "PEP SEND: %s -> %s%s FROM %s",
+        (m.receiver ?
+          m.receiver.tagName+(m.receiver.id ? '#'+m.receiver.id : '') :
+          '[global]'
+        ),
+        m.action,
+        m.arguments ? ' PASSING '+m.arguments : '',
+        sender.id ? '#'+sender.id : sender.tagName
+      );
+      var actionFn = Pep.Actions[m.action];
+      if (
+        m.receiver &&
+        m.receiver.xPepTarget &&
+        typeof m.receiver.xPepTarget[m.action] == 'function'
+      ) {
+        actionFn = m.receiver.xPepTarget[m.action];
       }
+      var result = actionFn(sender, m.receiver, m.arguments, next);
+      if (result !== true) { next(); }
     }
     next();
   }
@@ -67,7 +77,6 @@ Pep = (function () {
       };
     });
   }
-
 
 
   API.attach = function (doc) {

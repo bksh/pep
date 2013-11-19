@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pep test - Shell game</title>
+    <!-- This is what you would include for Pep. -->
+    <script src="../src/core/pep.js"></script>
+    <script src="../src/core/document.js"></script>
+    <script src="../src/core/actions.js"></script>
+    <script src="../src/core/generate.js"></script>
+
+    <!-- Resources to enable the test - not relevant for implementations.-->
+    <link rel="stylesheet" href="resources/test.css" />
+    <script src="resources/conventions.js"></script>
+    <script>window.onload = function () { Pep.attach(document); };</script>
+
+    <style>
+      #shells {
+        background: white;
+        padding: 75px 15px 15px;
+        overflow: hidden;
+        margin-bottom: 15px;
+      }
+      #shells > div {
+        position: relative;
+        width: 140px;
+        height: 80px;
+        float: left;
+        margin: 0 15px;
+      }
+      .shell {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-top-left-radius: 80px;
+        border-top-right-radius: 80px;
+        background: -webkit-radial-gradient(30% 30%, circle closest-corner, #C77, #933);
+        border: 1px solid #811;
+        -webkit-transition: -webkit-transform 300ms ease-in-out;
+      }
+      .lift .shell {
+        -webkit-transform: translateY(-60px);
+      }
+      .stone {
+        position: absolute;
+        background: -webkit-radial-gradient(70% 70%, circle closest-corner, #555, #444);
+        border: 1px solid #222;
+        left: 60px;
+        bottom: 0px;
+        width: 20px;
+        height: 10px;
+        border-radius: 20px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 7px;
+      }
+      #btnPlay {
+        padding: 20px;
+        font-family: Helvetica Neue, sans-serif;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 3px;
+        background: #344D56;
+        color: #EEF;
+        letter-spacing: 0.1em;
+      }
+      #instructions {
+        padding: 20px;
+        text-align: center;
+      }
+      #instructions, .spin #btnPlay { display: none; }
+      .spin #instructions { display: block; }
+
+      /* THESE ARE THE SHELL ANIMATIONS WHEN THE GAME IS PLAYED */
+      @-webkit-keyframes spin1 {
+        from { -webkit-transform: translateX(0px); }
+        33% { -webkit-transform: translateX(340px); }
+        66% { -webkit-transform: translateX(340px); }
+        to { -webkit-transform: translateX(170px); }
+      }
+      .spin #box1 {
+        -webkit-animation: spin1 1500ms 1 ease-out;
+        -webkit-transform: translateX(170px);
+      }
+      @-webkit-keyframes spin2 {
+        from { -webkit-transform: translateX(0px); }
+        33% { -webkit-transform: translateX(-170px); }
+        66% { -webkit-transform: translateX(-170px); }
+        to { -webkit-transform: translateX(170px); }
+      }
+      .spin #box2 {
+        -webkit-animation: spin2 1500ms 1 ease-in-out;
+        -webkit-transform: translateX(170px);
+      }
+      @-webkit-keyframes spin3 {
+        from { -webkit-transform: translateX(0px); }
+        33% { -webkit-transform: translateX(-170px); }
+        66% { -webkit-transform: translateX(-170px); }
+        to { -webkit-transform: translateX(-340px); }
+      }
+      .spin #box3 {
+        -webkit-animation: spin3 1500ms 1 ease-in;
+        -webkit-transform: translateX(-340px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pep test - Shell game</h1>
+
+    <div id="game">
+      <div id="shells">
+        <div id="box1" x-pep-send="
+          #box1 class(lift 500ms) wait(500ms)
+          #game class(spin remove)
+        ">
+          <div class="shell"></div>
+        </div>
+        <div id="box2" x-pep-send="
+          #box2 class(lift 500ms) wait(500ms)
+          #game class(spin remove)
+        ">
+          <div class="stone"></div>
+          <div class="shell"></div>
+        </div>
+        <div id="box3" x-pep-send="
+          #box3 class(lift 500ms) wait(500ms)
+          #game class(spin remove)
+        ">
+          <div class="shell"></div>
+        </div>
+      </div>
+      <div id="btnPlay" x-pep-send="
+        #box2 class(lift 500) wait(500)
+        #game class(spin)
+      ">PLAY</div>
+      <div id="instructions">Click the shell with the stone!</div>
+    </div>
+  </body>
+  <script>InspectConventions();</script>
+</html>
