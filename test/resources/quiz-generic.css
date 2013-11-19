@@ -9,7 +9,7 @@ textarea {
   resize: vertical;
 }
 
-.senderChoice {
+fieldset div[x-pep-send~="select"] {
   float: left;
   text-align: center;
   width: 80px;
@@ -19,7 +19,7 @@ textarea {
   margin-right: 10px;
 }
 
-.senderChoice.pep-quiz-selected {
+fieldset div[x-pep-send~="select"].pep-quiz-selected {
   color: blue;
   background: #CCF;
 }

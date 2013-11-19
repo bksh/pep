@@ -31,7 +31,7 @@
     <h2>Showing and hiding quiz-related content</h2>
 
     <p>
-      First, always have this rule in your stylesheet:
+      First, always have a rule like this one in your stylesheet:
     </p>
 
     <pre><code>.if-pep-quiz { display: none; }</code></pre>
@@ -45,10 +45,10 @@
     <pre><code>&lt;p class="if-pep-quiz"&gt;Here's a quiz!&lt;/p&gt;</code></pre>
 
     <p>
-      Technically, this is what's happening: if Pep is enabled and the
-      'quiz' convention is registered with Pep, the <code>if-pep-quiz</code>
-      class is removed from all elements. (Pep assumes this will 'unhide'
-      each such element.)
+      Here's what happens: if Pep is enabled and the 'quiz' convention
+      is registered with Pep, the <code>if-pep-quiz</code> class is
+      removed from all elements. (Pep assumes this will 'unhide'
+      each such element, without side effects.)
     </p>
 
     <p>
@@ -59,7 +59,7 @@
     <pre><code>&lt;p class="unless-pep-quiz"&gt;No quiz for you.&lt;/p&gt;</code></pre>
 
     <p>
-      Technically, elements with a class of 'unless-pep-quiz' will be
+      Elements with a class of 'unless-pep-quiz' will be
       <strong>removed from the document</strong> if Pep is enabled
       and the 'quiz' convention is registered with Pep. As always with Pep,
       the document is structured and styled so that it will degrade
@@ -105,7 +105,7 @@
     <p>
       Now, when the quiz is submitted, Pep will look at all of the elements
       with a <code>x-pep-quiz-answer</code> attribute and check that their
-      values match the attribute value.
+      values match the attribute.
     </p>
 
 
@@ -126,20 +126,27 @@
       <code>&lt;select&gt;</code> to make those quizzes.
     </p>
     <p>
-      You can actually make any element a multiple choice answer by
+      In fact you can make any element a multiple choice answer by
       giving it a <code>x-pep-send="select"</code> attribute.
     </p>
     <p>
       You can also use <code>&lt;input type="text"&gt;</code> and
-      <code>&lt;textarea&gt;</code> to match strings as shown above.
-      Obviously, the string must match precisely (after trimming leading
-      and trailing spaces), so this is not a common quiz answer field type.
-      (Also note: The field value is converted to lowercase if the answer
-      is all-lowercase. For case-sensitive answers, include at least one
-      uppercase character.)
+      <code>&lt;textarea&gt;</code> to match strings as shown in the first
+      example.  Obviously, the string must match precisely (after trimming
+      leading and trailing spaces), so this is not a common quiz answer field
+      type. (Also note: The field value is converted to lowercase if the
+      answer is all-lowercase. For case-sensitive answers, include at least
+      one uppercase character.)
     </p>
     <p>
-      Let's look at a quiz that uses every possible type of field:
+      For radio buttons, checkboxes and send-select elements, you
+      can flag that a choice is correct simply by giving it a blank
+      <code>x-pep-quiz-answer</code> attribute. For text fields and
+      and select dropdowns, you should give the actual value you expect
+      for this attribute, ie <code>x-pep-quiz-answer="foo"</code>.
+    </p>
+    <p>
+      Let's look at a quiz that uses every type of field:
     </p>
 
 
@@ -159,6 +166,7 @@
     <label>
       How many characters are in the alphabet?
       <select x-pep-quiz-answer="26">
+        <option></option>
         <option>22</option>
         <option>26</option>
         <option>256</option>
@@ -176,13 +184,13 @@
   </fieldset>
   <fieldset>
     <p>Which of these characters is not in the alphabet?</p>
-    <div class="senderChoice" x-pep-send="select" x-pep-quiz-answer>Ж</div>
-    <div class="senderChoice" x-pep-send="select">W</div>
-    <div class="senderChoice" x-pep-send="select">H</div>
+    <div x-pep-send="select" x-pep-quiz-answer>Ж</div>
+    <div x-pep-send="select">W</div>
+    <div x-pep-send="select">H</div>
   </fieldset>
   <fieldset>
     <label>
-      What is the first character in the alphabet?
+      What is the first character of the alphabet?
       <input type="text" max-length="1" size="1" x-pep-quiz-answer="a" />
     </label>
   </fieldset>
@@ -197,46 +205,77 @@
 
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <h2>Additional quiz options</h2>
 
     <p>
-      A quiz form can also take a few HTML5 attributes to tailor its appearance and behavior. Currently they are:
-
-      x-pep-quiz-name - the ‘name’ of the quiz, used in various parts of the UI (default: Quiz)
-      x-pep-quiz-stylesheet - a special stylesheet that can be used to completely customize the display of the quiz (default: a stylesheet supplied by the reading system)
+      A quiz form can also take a few special attributes to tailor
+      its appearance and behavior. Currently they are:
     </p>
-
+    <ul>
+      <li>
+        <code>x-pep-quiz-name</code> -
+        the ‘name’ of the quiz, which the reading system may use throughout
+        its UI. (Default: 'Quiz'.)
+      </li>
+      <li>
+        <code>x-pep-quiz-stylesheet</code> -
+        a stylesheet included with your book that customizes the display of
+        the quiz. (Default: the reading system <em>may</em> supply its own
+        quiz stylesheet if this attribute is absent.)
+      </li>
+    </ul>
 
     <h2>Focusing on one question</h2>
+
     <p>
-      ...
+      In the preceding example, all the questions are shown together, with
+      a submit button at the end. You might instead choose to show one question
+      at a time. This is a simple matter of two new rules in your stylesheet:
     </p>
 
+<pre><code>
+.pep-quiz fieldset { display: none; }<br />
+.pep-quiz fieldset.pep-quiz-focus { display: block; }
+</code></pre>
+
+    <p>
+      Pep will control the assignment of the <code>pep-quiz-focus</code>
+      class to the current question. To move from one question to the next,
+      of course, you need a sender that sends a <code>next</code> action
+      to the quiz.
+    </p>
+
+    <p>
+      Here's an example:
+    </p>
+
+    <div class="convention">
+
+<!-- CONVENTION: START -->
+<form class="pep-quiz" x-pep-quiz-stylesheet="resources/quiz-math.css">
+  <fieldset>
+    <p>Whose theorem provides the hypotenuse of a triangle?</p>
+    <label><input type="radio" />Hippocrates</label>
+    <label><input type="radio" />Isoceles</label>
+    <label><input type="radio" x-pep-quiz-answer />Pythagorus</label>
+    <button x-pep-send="next">Continue</button>
+  </fieldset>
+  <fieldset>
+    <p>What is 2^3?</p>
+    <div x-pep-send="select next" x-pep-quiz-answer>8</div>
+    <div x-pep-send="select next">12</div>
+    <div x-pep-send="select next">16</div>
+  </fieldset>
+</form>
+<!-- CONVENTION: END -->
+
+    </div>
+
+    <p>
+      You can see, in the second question, that we chained the
+      <code>next</code> action to the existing <code>select</code>, thereby
+      avoiding the need for an additional button.
+    </p>
 
     <h2>Scoring</h2>
     <p>
@@ -263,6 +302,8 @@
     - previous
     </p>
 
+
+    <h2>Some interesting quiz examples</h2>
 
 <!-- CONVENTION: START -->
 <form

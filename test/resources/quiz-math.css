@@ -1,0 +1,32 @@
+body {
+  font: 13pt Helvetica Neue, sans-serif;
+}
+
+fieldset {
+  border: none;
+  display: none;
+}
+
+fieldset.pep-quiz-focus {
+  display: block;
+}
+
+label {
+  display: block;
+  margin: 0.5em 0;
+}
+
+fieldset div[x-pep-send~="select"] {
+  float: left;
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  font: bold 32px/80px Arial Black, sans-serif;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+fieldset div[x-pep-send~="select"]:hover {
+  color: #FFE;
+  background: #F90;
+}

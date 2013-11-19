@@ -6,6 +6,7 @@ function InspectConventions() {
       code.appendChild(document.createTextNode('\n'));
     }
     var html = code.innerHTML;
+    html = html.replace(/(x-pep-[\w-]+)=""/g, '$1');
     code.innerHTML = "";
     code.appendChild(document.createTextNode(html.trim()));
 
