@@ -8,6 +8,21 @@ Pep.Actions = {
   },
 
 
+  'suspend': function () {
+    Pep.suspend();
+  },
+
+
+  'resume': function (sender, receiver, args, callback) {
+    var delay = parseInt(args, 10) || 0;
+    setTimeout(function () {
+      Pep.resume();
+      callback();
+    }, delay);
+    return true;
+  },
+
+
   // Adds or removes a class on the message receiver.
   //
   'class': function (sender, receiver, args, callback) {

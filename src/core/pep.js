@@ -62,8 +62,13 @@ Pep = (function () {
       ) {
         actionFn = m.receiver.xPepTarget[m.action];
       }
-      var result = actionFn(sender, m.receiver, m.arguments, next);
-      if (result !== true) { next(); }
+      if (actionFn) {
+        var result = actionFn(sender, m.receiver, m.arguments, next);
+        if (result !== true) { next(); }
+      } else {
+        console.warn('PEP SEND: unknown action - %s', m.action);
+        next();
+      }
     }
     next();
   }
@@ -72,8 +77,10 @@ Pep = (function () {
   function attachSenders(pepdoc) {
     pepdoc.senders(function (sender, msgs) {
       sender.onclick = function (evt) {
-        send(sender, msgs)
         evt.preventDefault();
+        if (!API.suspended) {
+          send(sender, msgs)
+        }
       };
     });
   }
@@ -128,6 +135,16 @@ Pep = (function () {
     for (var i = 0, ii = docs.length; i < ii; ++i) {
       Pep.doc(docs[i]).updateBindings();
     }
+  }
+
+
+  API.suspend = function () {
+    API.suspended = true;
+  }
+
+
+  API.resume = function () {
+    API.suspended = false;
   }
 
 

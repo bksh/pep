@@ -47,10 +47,10 @@
         left: 60px;
         bottom: 0px;
         width: 20px;
-        height: 10px;
+        height: 20px;
         border-radius: 20px;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 7px;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 17px;
       }
       #btnPlay {
         padding: 20px;
@@ -62,42 +62,42 @@
         color: #EEF;
         letter-spacing: 0.1em;
       }
-      #instructions {
+      #instructions, #correct {
         padding: 20px;
         text-align: center;
       }
-      #instructions, .spin #btnPlay { display: none; }
-      .spin #instructions { display: block; }
+      #instructions, .shuffled #btnPlay, #correct { display: none; }
+      .prompt #instructions, .shuffled.won #correct { display: block; }
 
       /* THESE ARE THE SHELL ANIMATIONS WHEN THE GAME IS PLAYED */
-      @-webkit-keyframes spin1 {
+      @-webkit-keyframes shuffled1 {
         from { -webkit-transform: translateX(0px); }
         33% { -webkit-transform: translateX(340px); }
         66% { -webkit-transform: translateX(340px); }
         to { -webkit-transform: translateX(170px); }
       }
-      .spin #box1 {
-        -webkit-animation: spin1 1500ms 1 ease-out;
+      .shuffled #box1 {
+        -webkit-animation: shuffled1 1500ms 1 ease-out;
         -webkit-transform: translateX(170px);
       }
-      @-webkit-keyframes spin2 {
+      @-webkit-keyframes shuffled2 {
         from { -webkit-transform: translateX(0px); }
         33% { -webkit-transform: translateX(-170px); }
         66% { -webkit-transform: translateX(-170px); }
         to { -webkit-transform: translateX(170px); }
       }
-      .spin #box2 {
-        -webkit-animation: spin2 1500ms 1 ease-in-out;
+      .shuffled #box2 {
+        -webkit-animation: shuffled2 1500ms 1 ease-in-out;
         -webkit-transform: translateX(170px);
       }
-      @-webkit-keyframes spin3 {
+      @-webkit-keyframes shuffled3 {
         from { -webkit-transform: translateX(0px); }
         33% { -webkit-transform: translateX(-170px); }
         66% { -webkit-transform: translateX(-170px); }
         to { -webkit-transform: translateX(-340px); }
       }
-      .spin #box3 {
-        -webkit-animation: spin3 1500ms 1 ease-in;
+      .shuffled #box3 {
+        -webkit-animation: shuffled3 1500ms 1 ease-in;
         -webkit-transform: translateX(-340px);
       }
     </style>
@@ -105,33 +105,53 @@
   <body>
     <h1>Pep test - Shell game</h1>
 
-    <div id="game">
-      <div id="shells">
-        <div id="box1" x-pep-send="
-          #box1 class(lift 500ms) wait(500ms)
-          #game class(spin remove)
-        ">
-          <div class="shell"></div>
-        </div>
-        <div id="box2" x-pep-send="
-          #box2 class(lift 500ms) wait(500ms)
-          #game class(spin remove)
-        ">
-          <div class="stone"></div>
-          <div class="shell"></div>
-        </div>
-        <div id="box3" x-pep-send="
-          #box3 class(lift 500ms) wait(500ms)
-          #game class(spin remove)
-        ">
-          <div class="shell"></div>
-        </div>
-      </div>
-      <div id="btnPlay" x-pep-send="
-        #box2 class(lift 500) wait(500)
-        #game class(spin)
-      ">PLAY</div>
-      <div id="instructions">Click the shell with the stone!</div>
+    <div class="convention">
+
+<!-- EXAMPLE: START -->
+<div id="game">
+  <div id="shells">
+    <div id="box1" x-pep-send="
+      suspend
+      #box1 class(lift 500ms) wait(500ms)
+      #game class(shuffled remove) class(prompt remove)
+      resume
+    ">
+      <div class="shell"></div>
+    </div>
+    <div id="box2" x-pep-send="
+      suspend
+      #game class(prompt remove) class(won add)
+      #box2 class(lift 1000ms)
+      wait(500ms)
+      #game class(won remove) class(shuffled remove)
+      resume
+    ">
+      <div class="stone"></div>
+      <div class="shell"></div>
+    </div>
+    <div id="box3" x-pep-send="
+      suspend
+      #box3 class(lift 500ms) wait(500ms)
+      #game class(shuffled remove) class(prompt remove)
+      resume
+    ">
+      <div class="shell"></div>
+    </div>
+    <br style="clear: left;" />
+  </div>
+  <div id="btnPlay" x-pep-send="
+    suspend
+    #box2 class(lift 500) wait(500)
+    #game class(shuffled)
+    wait(1500)
+    #game class(prompt)
+    resume
+  ">PLAY</div>
+  <div id="instructions">Click the shell with the stone.</div>
+  <div id="correct">You found the stone!</div>
+</div>
+<!-- EXAMPLE: END -->
+
     </div>
   </body>
   <script>InspectConventions();</script>
