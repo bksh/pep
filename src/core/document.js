@@ -24,133 +24,40 @@ Pep.Document = function (doc) {
 
   // Iterates over all the senders in the document.
   //
-  // If supplied, the iterator function should take up to three arguments:
+  // If supplied, the iterator function should take up to two arguments:
   //
-  //    (sender, msgs, index)
+  //    (sequence, index)
   //
   // The return value may be useful especially if you don't supply an
-  // iterator function. It returns an array of [sender, msgs].
+  // iterator function. It returns an array of [sender, sequence].
   //
   API.senders = function (iterator) {
     var senders = [];
-    API.each('[x-pep-send]', function (sender) {
-      var msgs = API.messages(sender);
-      senders.push([sender, msgs]);
+    API.each('[x-pep-send]', function (sender, index) {
+      var attr = sender.getAttribute('x-pep-send');
+      var sequence = new Pep.Sequence(sender, attr);
+      senders.push(sequence);
       if (typeof iterator == "function") {
-        iterator(sender, msgs);
+        iterator(sequence, index);
       }
     });
     return senders;
   }
 
 
-  // Find senders that target a specific element. The useful thing about
-  // this method is that the element does not need to have xPepTarget set --
-  // it is treated as if it is a receiver for this action anyway.
-  //
-  API.sendersFor = function (receiver, action, iterator) {
-    var matches = [];
-    var filter = function (sender, msgs, index) {
-      var matchingMsgs = [];
-      for (var i = 0, ii = msgs.length; i < ii; ++i) {
-        if (msgs[i].receiver === receiver && msgs[i].action == action) {
-          matchingMsgs.push(msgs[i]);
-        }
-      }
-      if (matchingMsgs.length) {
-        matches.push([sender, matchingMsgs]);
-        if (typeof iterator == "function") {
-          iterator(sender, matchingMsgs, index);
-        }
-      }
-    }
-    if (receiver.xPepTarget) {
-      API.senders(filter);
-    } else {
-      // Well yeah, we cheat... :)
-      receiver.xPepTarget = {};
-      receiver.xPepTarget[action] = function () {};
-      API.senders(filter);
-      delete receiver.xPepTarget;
-    }
-    return matches;
-  }
-
-
-  // Returns an array of hashes, each being a message in the form:
-  //
-  //  {
-  //    receiver: <DOMElement> or 'global',
-  //    action: 'wait',
-  //    arguments: '3000'
-  //  }
-  //
-  // Arguments is a string if the action is in the form: 'name(...)', like
-  // wait (or for quizzes, jump). It's undefined for actions in the
-  // form 'name', like 'trigger'. Arguments is NOT an array, it's a string --
-  // if you want to split it on commas or something, that's up to your handler.
-  //
-  API.messages = function (sender) {
-    var msgs = [];
-    var val = sender.getAttribute('x-pep-send');
-    var rec = '[unknown]';
-    // Split up the messages.
-    val.replace(/([^\s\(]+)(\(([^\)]*)\))?/g, function (m, str, parens, args) {
-      if (!args && str.match(/^#/)) {
-        rec = str;
-      } else {
-        msgs.push({ 'receiver': rec, 'action': str, 'arguments': args });
-      }
-    });
-
-    // Resolve the receiver for each message.
-    API.iterate(msgs, function (msg) {
-      msg.receiver = resolveReceiver(sender, msg.receiver, msg.action);
-    });
-    return msgs;
-  }
-
-
-  function resolveReceiver(sender, recStr, action) {
-    var rec;
-    if (recStr == '[unknown]') {
-      var cursor = sender;
-      while (cursor) {
-        if (cursor.xPepTarget) {
-          rec = cursor;
-          cursor = null;
-        } else {
-          cursor = cursor.parentNode;
-        }
-      }
-    } else {
-      rec = doc.querySelector(recStr);
-    }
-    return rec;
-  }
-
-
-  // TODO: implement and document!
-  //
-  // API.bindings = function (label, iterator) {
-  //   if (arguments.length == 1 && typeof arguments[0] == 'function') {
-  //     iterator = arguments[0];
-  //     label = null;
-  //   }
-  //   var elems = [];
-  //   // TODO
-  //   return API.iterate(elems, iterator);
-  // }
-
-
-  API.updateBindings = function () {
+  API.updateBindings = function (label, callback) {
     var data = Pep.allData();
-    API.each('[x-pep-data-text]', function (bnd) {
-      var k = bnd.getAttribute('x-pep-data-text');
+    var eq = typeof label != 'undefined' ? '="'+label+'"' : '';
+
+    // Bound text:
+    API.each('[x-pep-bind-text'+eq+']', function (bnd) {
+      var k = bnd.getAttribute('x-pep-bind-text');
       bnd.innerHTML = data[k];
     });
-    API.each('[x-pep-data-attr]', function (bnd) {
-      var k = bnd.getAttribute('x-pep-data-attr');
+
+    // Bound attributes:
+    API.each('[x-pep-bind-attr'+eq+']', function (bnd) {
+      var k = bnd.getAttribute('x-pep-bind-attr');
       var v = data[k];
       var attr = 'data-pep-'+k;
       if (v === null || typeof v == 'undefined') {
@@ -159,6 +66,33 @@ Pep.Document = function (doc) {
         bnd.setAttribute(attr, v);
       }
     });
+
+    // Bound display conditions:
+    API.each('[x-pep-bind-show]', function (bnd) {
+      var attr = bnd.getAttribute('x-pep-bind-show');
+      var condition = new Pep.Sequence.Condition(attr);
+      if (!label || condition.testsLabel(label)) {
+        bnd.style.display = condition.test() ? '' : 'none';
+      }
+    });
+
+    // Bound sequences:
+    var sequences = [];
+    var sequenceCount = 0;
+    var pop = function (seq) {
+      sequenceCount -= 1;
+      if (!sequenceCount) {
+        if (typeof callback == 'function') { callback(); }
+      }
+    }
+    API.each('[x-pep-bind]', function (bnd) {
+      sequences.push(new Pep.Sequence(bnd, bnd.getAttribute('x-pep-bind')));
+    });
+    if (sequenceCount = sequences.length) {
+      API.iterate(sequences, function (seq) { seq.execute(label, pop); });
+    } else {
+      if (typeof callback == 'function') { callback(); }
+    }
   }
 
 

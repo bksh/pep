@@ -9,7 +9,7 @@
 //
 Pep.Handler.Frame = function (pepdoc) {
   pepdoc.each('[x-pep-frame]', function (elem) {
-    elem.xPepTarget = {
+    elem.xPepActions = {
       trigger: function () {
         var url = elem.getAttribute('x-pep-frame');
         Pep.Generate.popupIframe(elem, url, { className: 'pep-popup-frame' });

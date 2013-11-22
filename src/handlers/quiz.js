@@ -64,11 +64,7 @@ Pep.Handler.Quiz.Proxy = function (pepdoc, quizForm) {
     p.quizHTML = getQuizHTML();
     p.quizStylesheet = quizForm.getAttribute('x-pep-quiz-stylesheet');
     p.quizButton = replaceQuizForm();
-    if (pepdoc.sendersFor(p.quizButton, 'trigger').length) {
-      p.quizButton.style.display = 'none';
-    } else {
-      p.quizButton.setAttribute('x-pep-send', 'trigger');
-    }
+    p.quizButton.setAttribute('x-pep-send', 'trigger');
     delete quizForm;
   }
 
@@ -92,7 +88,7 @@ Pep.Handler.Quiz.Proxy = function (pepdoc, quizForm) {
     quizForm.parentNode.insertBefore(btn, quizForm);
     quizForm.parentNode.removeChild(quizForm);
     btn.id = quizForm.id;
-    btn.xPepTarget = { 'trigger': trigger };
+    btn.xPepActions = { 'trigger': trigger };
     return btn;
   }
 
@@ -133,26 +129,14 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
       submit.setAttribute('x-pep-send', 'submit');
     });
 
-    // Create a submit button if it doesn't exist
-    var lastQ = quizForm.querySelector('fieldset:last-of-type') || quizForm;
-    if (
-      !pepdoc.sendersFor(lastQ, 'submit').length &&
-      !pepdoc.sendersFor(lastQ, 'next').length
-    ) {
-      var submit = doc.createElement('button');
-      submit.innerHTML = 'Check your answers';
-      submit.setAttribute('x-pep-send', 'submit');
-      lastQ.appendChild(submit);
-    }
-
     // Create data bindings for scoreboard
     p.scoreboard = pepdoc.find(p.qSel+' .pep-quiz-scoreboard');
     if (!p.scoreboard) {
       p.scoreboard = doc.createElement('div');
       p.scoreboard.className = 'pep-quiz-scoreboard';
       p.scoreboard.innerHTML = [
-        'You scored <span x-pep-data-text="quiz-score-correct"></span>',
-        'out of <span x-pep-data-text="quiz-score-total"></span>'
+        'You scored <span x-pep-bind-text="quiz-score-correct"></span>',
+        'out of <span x-pep-bind-text="quiz-score-total"></span>'
       ].join('\n');
       quizForm.appendChild(p.scoreboard);
     }
@@ -275,13 +259,13 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   // do we do for quizzes without ids?
   //
   // One option: we could scope on id -- eg: quiz-score-correct-quizNascar
-  // -- then we look for x-pep-data attributes that have unscoped labels
+  // -- then we look for x-pep-bind attributes that have unscoped labels
   // and modify them to be scoped by the provided or generated id (ie, we
   // will turn x-pep-data="quiz-score-correct" into
   // x-pep-data="quiz-score-correct-quizNascar").
   //
   // This is nice because it requires zero changes in Pep core. But it is
-  // harder for x-pep-data-condition expressions... And besides, this seems
+  // harder for x-pep-bind expressions... And besides, this seems
   // like it will be a common problem, requiring a standard solution.
   //
   function publishScore() {
@@ -308,7 +292,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
   /* The actions */
 
-  quizForm.xPepTarget = {
+  quizForm.xPepActions = {
     submit: submit,
 
 

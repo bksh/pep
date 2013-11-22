@@ -30,7 +30,7 @@ Pep.Handler.Map = function (pepdoc) {
     }
   }
   pepdoc.each('[x-pep-map]', function (elem) {
-    elem.xPepTarget = actions;
+    elem.xPepActions = actions;
     elem.setAttribute('x-pep-send', 'trigger');
   });
 }

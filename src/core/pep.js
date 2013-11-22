@@ -20,74 +20,9 @@ Pep = (function () {
   }
 
 
-  // Iterate over each convention in registry and invoke the handler.
-  //
-  function attachConventions(pepdoc) {
-    for (var conv in registry) {
-      if (registry.hasOwnProperty(conv)) {
-        pepdoc.each('.unless-pep-'+conv, function (elem) {
-          elem.parentNode.removeChild(elem);
-        });
-        pepdoc.each('.if-pep-'+conv, function (elem) {
-          elem.classList.remove('if-pep-'+conv);
-        });
-        registry[conv](pepdoc, conv);
-      }
-    }
-  }
-
-
-  // Recurse through the messages, invoking the appropriate action for each.
-  //
-  function send(sender, msgs) {
-    msgs = msgs.slice(0);
-    var next = function () { recurse(msgs.shift()) };
-    var recurse = function (m) {
-      if (!m) { return; }
-      console.log(
-        "PEP SEND: %s -> %s%s FROM %s",
-        (m.receiver ?
-          m.receiver.tagName+(m.receiver.id ? '#'+m.receiver.id : '') :
-          '[global]'
-        ),
-        m.action,
-        m.arguments ? ' PASSING '+m.arguments : '',
-        sender.id ? '#'+sender.id : sender.tagName
-      );
-      var actionFn = Pep.Actions[m.action];
-      if (
-        m.receiver &&
-        m.receiver.xPepTarget &&
-        typeof m.receiver.xPepTarget[m.action] == 'function'
-      ) {
-        actionFn = m.receiver.xPepTarget[m.action];
-      }
-      if (actionFn) {
-        var result = actionFn(sender, m.receiver, m.arguments, next);
-        if (result !== true) { next(); }
-      } else {
-        console.warn('PEP SEND: unknown action - %s', m.action);
-        next();
-      }
-    }
-    next();
-  }
-
-
-  function attachSenders(pepdoc) {
-    pepdoc.senders(function (sender, msgs) {
-      sender.onclick = function (evt) {
-        evt.preventDefault();
-        if (!API.suspended) {
-          send(sender, msgs)
-        }
-      };
-    });
-  }
-
-
   API.attach = function (doc) {
     var pepdoc = API.doc(doc);
+    flipConditionalClasses(pepdoc, 'pep');
     attachConventions(pepdoc);
     attachSenders(pepdoc);
     pepdoc.updateBindings();
@@ -104,37 +39,84 @@ Pep = (function () {
   }
 
 
-  // You can either pass a key and a value as separate arguments,
-  // or a hash of key/values as a single argument.
-  //
-  API.setData = function (key, value) {
-    var delta = {};
-    if (arguments.length == 2) {
-      delta[key] = value;
-    } else if (arguments.length == 1) {
-      delta = arguments[0];
-    }
-    for (var k in delta) { if (delta.hasOwnProperty(k)) {
-      data[k] = delta[k];
-    } }
-    dataUpdated();
+
+  function flipConditionalClasses(pepdoc, name) {
+    pepdoc.each('.unless-'+name, function (elem) {
+      elem.parentNode.removeChild(elem);
+    });
+    pepdoc.each('.if-'+name, function (elem) {
+      elem.classList.remove('if-'+name);
+    });
   }
 
 
-  API.getData = function (key) {
-    return data[key];
+  // Iterate over each convention in registry and invoke the handler.
+  //
+  function attachConventions(pepdoc) {
+    for (var conv in registry) {
+      if (registry.hasOwnProperty(conv)) {
+        flipConditionalClasses(pepdoc, 'pep-'+conv);
+        registry[conv](pepdoc, conv);
+      }
+    }
+  }
+
+
+  function attachSenders(pepdoc) {
+    pepdoc.senders(function (sequence) {
+      sequence.sender.onclick = function (evt) {
+        evt.preventDefault();
+        if (!API.suspended && !sequence.sender.hasAttribute('disabled')) {
+          send(sequence);
+        }
+      };
+    });
+  }
+
+
+  // Iterate through the rules in this sequence, testing conditions and
+  // invoking actions.
+  //
+  function send(sequence) {
+    Pep.suspend();
+    sequence.execute(Pep.resume);
+  }
+
+
+  // You can either pass a label and a value as separate arguments,
+  // or a hash of label/values as a single argument.
+  //
+  // The callback, if provided, will be invoked when all of the bindings
+  // have been executed.
+  //
+  API.setData = function (label, value, callback) {
+    // var delta = {};
+    // if (arguments.length == 2) {
+    //   delta[label] = value;
+    // } else if (arguments.length == 1) {
+    //   delta = arguments[0];
+    // }
+    // for (var k in delta) { if (delta.hasOwnProperty(k)) {
+    //   data[k] = delta[k];
+    // } }
+    if (typeof value == 'undefined' || value === null) {
+      delete(data[label]);
+    } else {
+      data[label] = value;
+    }
+    for (var i = 0, ii = docs.length; i < ii; ++i) {
+      Pep.doc(docs[i]).updateBindings(label, callback);
+    }
+  }
+
+
+  API.getData = function (label) {
+    return data[label];
   }
 
 
   API.allData = function () {
     return JSON.parse(JSON.stringify(data));
-  }
-
-
-  function dataUpdated() {
-    for (var i = 0, ii = docs.length; i < ii; ++i) {
-      Pep.doc(docs[i]).updateBindings();
-    }
   }
 
 
@@ -148,8 +130,9 @@ Pep = (function () {
   }
 
 
-  API.Handler = {};
-
-
   return API;
 })();
+
+
+Pep.Actions = {};
+Pep.Handler = {};

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pep test - Memory game</title>
+    <!-- This is what you would include for Pep. -->
+    <script src="../src/core/pep.js"></script>
+    <script src="../src/core/sequence.js"></script>
+    <script src="../src/core/document.js"></script>
+    <script src="../src/core/actions.js"></script>
+    <script src="../src/core/generate.js"></script>
+
+    <!-- Resources to enable the test - not relevant for implementations.-->
+    <link rel="stylesheet" href="resources/test.css" />
+    <script src="resources/conventions.js"></script>
+    <script>window.onload = function () { Pep.attach(document); };</script>
+
+    <style>
+      .card {
+        float: left;
+        width: 100px;
+        height: 100px;
+        margin-left: 10px;
+        color: white;
+        background: white;
+        text-align: center;
+        line-height: 100px;
+      }
+      .turn {
+        color: black;
+      }
+      .lock {
+       color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pep test - Memory</h1>
+
+    <div class="convention">
+
+<!-- EXAMPLE: START -->
+<!-- This says:
+
+  When the div is clicked:
+  * increment "moves" counter by 1, and add the "turn" class to this element
+  * if nothing was currently turned, make 'a1' the active card
+  * if the active card does NOT start with 'a', wait 500ms then clear the active card
+  * if the active card is a2 (ie, this card's pair), then add 'a' to the list of matches and reset the active card
+
+  When data changes:
+  * if the active card is being cleared, remove the "turn" class from this element
+  * if the list of matches now includes 'a', add the "lock" class to this element and prevent it from being clicked again
+
+-->
+<div
+  class="card"
+  x-pep-send="
+    data(moves=+1) class(turn)
+    [!active] data(active=a1)
+    [!active^=a] wait(500) data(!active)
+    [active=a2] data(matches=~a) data(!active)
+  "
+  x-pep-bind="
+    [!active] class(!turn)
+    [matches~=a] class(lock) disable
+  "
+>A</div>
+
+<div
+  class="card"
+  x-pep-send="
+    data(moves=+1) class(turn)
+    [!active] data(active=z1)
+    [!active^=z] wait(500) data(!active)
+    [active=z2] data(matches=~z) data(!active)
+  "
+  x-pep-bind="
+    [!active] class(!turn)
+    [matches~=z] class(lock) disable
+  "
+>Z</div>
+
+<div
+  class="card"
+  x-pep-send="
+    data(moves=+1) class(turn)
+    [!active] data(active=z2)
+    [!active^=z] wait(500) data(!active)
+    [active=z1] data(matches=~z) data(!active)
+  "
+  x-pep-bind="
+    [!active] class(!turn)
+    [matches~=z] class(lock) disable
+  "
+>Z</div>
+
+<div
+  class="card"
+  x-pep-send="
+    data(moves=+1) class(turn)
+    [!active] data(active=a2)
+    [!active^=a] wait(500) data(!active)
+    [active=a1] data(matches=~a) data(!active)
+  "
+  x-pep-bind="
+    [!active] class(!turn)
+    [matches~=a] class(lock) disable
+  "
+>A</div>
+
+<br style="clear: left" />
+
+<div x-pep-bind-show="[moves]">
+  <span x-pep-bind-text="moves">0</span> moves
+  <span x-pep-bind-show="[matches~=a][matches~=z]">- you wins!</span>
+</div>
+<!-- EXAMPLE: END -->
+
+    </div>
+  </body>
+  <script>InspectConventions();</script>
+</html>

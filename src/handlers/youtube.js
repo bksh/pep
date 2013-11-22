@@ -18,7 +18,7 @@ Pep.Handler.Youtube = function (pepdoc) {
     }
   }
   pepdoc.each('[x-pep-youtube]', function (elem) {
-    elem.xPepTarget = actions;
+    elem.xPepActions = actions;
     elem.setAttribute('x-pep-send', 'trigger');
   });
 }
