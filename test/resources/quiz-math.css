@@ -16,7 +16,7 @@ label {
   margin: 0.5em 0;
 }
 
-fieldset div[x-pep-send~="select"] {
+fieldset div[data-pep-send~="select"] {
   float: left;
   text-align: center;
   width: 80px;
@@ -26,7 +26,7 @@ fieldset div[x-pep-send~="select"] {
   margin-right: 10px;
 }
 
-fieldset div[x-pep-send~="select"]:hover {
+fieldset div[data-pep-send~="select"]:hover {
   color: #FFE;
   background: #F90;
 }

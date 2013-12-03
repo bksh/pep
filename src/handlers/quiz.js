@@ -1,19 +1,19 @@
 //  QUIZ HANDLER FOR PEP
 //
 // On submit, each fieldset is assigned an attribute of
-// x-pep-quiz-marked="correct|incorrect".
+// data-pep-quiz-marked="correct|incorrect".
 //
 //   <form class="pep-quiz">
 //     <fieldset>
 //       <p>Who designed the original JavaScript language?</p>
-//       <div x-pep-send="select submit">Brandon Eichmann</div>
-//       <div x-pep-send="select submit">Rudolf Wøllinger</div>
-//       <div x-pep-send="select submit" x-pep-quiz-answer>Brendan Eich</div>
-//       <div x-pep-send="select submit">Rudolph Wöllinger</div>
+//       <div data-pep-send="select submit">Brandon Eichmann</div>
+//       <div data-pep-send="select submit">Rudolf Wøllinger</div>
+//       <div data-pep-send="select submit" data-pep-quiz-answer>Brendan Eich</div>
+//       <div data-pep-send="select submit">Rudolph Wöllinger</div>
 //     </fieldset>
 //     <div class="if-pep-quiz pep-quiz-scoreboard">
-//       You scored <span x-pep-data="quiz-score-correct"></span>
-//       out of <span x-pep-data="quiz-score-total"></span>!
+//       You scored <span data-pep-bind-text="quiz-score-correct"></span>
+//       out of <span data-pep-bind-text="quiz-score-total"></span>!
 //     </div>
 //   </form>
 //
@@ -43,9 +43,9 @@ Pep.Handler.Quiz = function (pepdoc) {
   pepdoc.each('.pep-quiz', function (quizForm) {
     // We replace the quiz form with a button that acts as a proxy
     // to invoke the actual quiz form inside an iframe. We can tell
-    // whether it's the actual quiz form using the 'x-pep-quiz-state'
+    // whether it's the actual quiz form using the 'data-pep-quiz-state'
     // attribute flag.
-    if (quizForm.getAttribute('x-pep-quiz-state') != 'live') {
+    if (quizForm.getAttribute('data-pep-quiz-state') != 'live') {
       Pep.Handler.Quiz.Proxy(pepdoc, quizForm);
     } else {
       Pep.Handler.Quiz.Form(pepdoc, quizForm);
@@ -62,16 +62,16 @@ Pep.Handler.Quiz.Proxy = function (pepdoc, quizForm) {
     p.doc = quizForm.ownerDocument;
     p.quizId = quizForm.id || ('pep-quiz-standalone-'+(new Date()).getTime());
     p.quizHTML = getQuizHTML();
-    p.quizStylesheet = quizForm.getAttribute('x-pep-quiz-stylesheet');
+    p.quizStylesheet = quizForm.getAttribute('data-pep-quiz-stylesheet');
     p.quizButton = replaceQuizForm();
-    p.quizButton.setAttribute('x-pep-send', 'trigger');
+    p.quizButton.setAttribute('data-pep-send', 'trigger');
     delete quizForm;
   }
 
 
   function getQuizHTML() {
     var cloneElement = quizForm.cloneNode(true);
-    cloneElement.setAttribute('x-pep-quiz-state', 'live');
+    cloneElement.setAttribute('data-pep-quiz-state', 'live');
     cloneElement.id = p.quizId;
     var surrogate = p.doc.createElement('div');
     surrogate.appendChild(cloneElement);
@@ -109,16 +109,12 @@ Pep.Handler.Quiz.Proxy = function (pepdoc, quizForm) {
 
 Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   var p = {};
-  var k = {
-    ANSWER_ATTR: 'x-pep-quiz-answer',
-    SELECT_KLS: 'pep-quiz-selected'
-  };
 
 
   function initialize() {
     var doc = quizForm.ownerDocument;
     p.qSel = '#'+quizForm.id;
-    p.name = quizForm.getAttribute('x-pep-quiz-name') || 'Quiz';
+    p.name = quizForm.getAttribute('data-pep-quiz-name') || 'Quiz';
 
     // Convert "submit" inputs into senders.
     quizForm.onsubmit = function (evt) {
@@ -126,7 +122,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
       evt.preventDefault();
     }
     pepdoc.find('input[type="submit"]', function (submit) {
-      submit.setAttribute('x-pep-send', 'submit');
+      submit.setAttribute('data-pep-send', 'submit');
     });
 
     // Create data bindings for scoreboard
@@ -135,8 +131,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
       p.scoreboard = doc.createElement('div');
       p.scoreboard.className = 'pep-quiz-scoreboard';
       p.scoreboard.innerHTML = [
-        'You scored <span x-pep-bind-text="quiz-score-correct"></span>',
-        'out of <span x-pep-bind-text="quiz-score-total"></span>'
+        'You scored <span data-pep-bind-text="quiz-score-correct"></span>',
+        'out of <span data-pep-bind-text="quiz-score-total"></span>'
       ].join('\n');
       quizForm.appendChild(p.scoreboard);
     }
@@ -173,7 +169,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
   function reset() {
     p.score = { total: 0, correct: 0 };
-    pepdoc.each('.'+k.SELECT_KLS, deselectAnswer);
+    pepdoc.each('.pep-quiz-selected', deselectAnswer);
     // TODO: revert values of all fields
   }
 
@@ -191,15 +187,15 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     p.score.total += 1;
     var correctIf = function (bool) {
       p.score.correct += bool ? 1 : 0;
-      fset.setAttribute('x-pep-quiz-marked', bool ? 'correct' : 'incorrect');
+      fset.setAttribute('data-pep-quiz-marked', bool ? 'correct' : 'incorrect');
     }
-    var answers = fset.querySelectorAll('['+k.ANSWER_ATTR+']');
+    var answers = fset.querySelectorAll('[data-pep-quiz-answer]');
     var answer = answers[0];
     if (!answer) {
       console.warn('No answer for field set:', fset);
       correctIf(false);
     } else if (hasSelectTrigger(answer)) {
-      correctIf(answer.classList.contains(k.SELECT_KLS));
+      correctIf(answer.classList.contains('pep-quiz-selected'));
     } else if (answer.type == 'radio') {
       var fields = fset.querySelectorAll('input[type="radio"]:checked');
       pepdoc.iterate(fields, selectAnswer);
@@ -213,7 +209,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     } else {
       selectAnswer(answer);
       var val = answer.value.trim();
-      var ans = answer.getAttribute(k.ANSWER_ATTR).trim();
+      var ans = answer.getAttribute('data-pep-quiz-answer').trim();
       // Will be case-insensitive if answer is all-lowercase.
       if (ans.match(/^[^A-Z]*$/)) { val = val.toLowerCase(); }
       correctIf(val === ans);
@@ -231,7 +227,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
 
   function selectAnswer(field) {
-    field.classList.add(k.SELECT_KLS);
+    field.classList.add('pep-quiz-selected');
     if (field.parentNode.tagName == 'LABEL') {
       selectAnswer(field.parentNode);
     }
@@ -239,12 +235,12 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
 
   function deselectAnswer(field) {
-    field.classList.remove(k.SELECT_KLS);
+    field.classList.remove('pep-quiz-selected');
   }
 
 
   function hasSelectTrigger(field) {
-    var msg = field.getAttribute('x-pep-send');
+    var msg = field.getAttribute('data-pep-send');
     if (typeof msg == 'string') {
       var actions = msg.split(/\s/);
       while (actions.length) {
@@ -259,13 +255,13 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   // do we do for quizzes without ids?
   //
   // One option: we could scope on id -- eg: quiz-score-correct-quizNascar
-  // -- then we look for x-pep-bind attributes that have unscoped labels
+  // -- then we look for data-pep-bind attributes that have unscoped labels
   // and modify them to be scoped by the provided or generated id (ie, we
-  // will turn x-pep-data="quiz-score-correct" into
-  // x-pep-data="quiz-score-correct-quizNascar").
+  // will turn data-pep-data="quiz-score-correct" into
+  // data-pep-data="quiz-score-correct-quizNascar").
   //
   // This is nice because it requires zero changes in Pep core. But it is
-  // harder for x-pep-bind expressions... And besides, this seems
+  // harder for data-pep-bind expressions... And besides, this seems
   // like it will be a common problem, requiring a standard solution.
   //
   function publishScore() {
@@ -316,8 +312,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
     select: function (sender) {
       var qElem = questionFor(sender);
-      qElem.removeAttribute('x-pep-quiz-marked');
-      var fields = qElem.querySelectorAll('.'+k.SELECT_KLS);
+      qElem.removeAttribute('data-pep-quiz-marked');
+      var fields = qElem.querySelectorAll('.pep-quiz-selected');
       for (var i = 0, ii = fields.length; i < ii; ++i) {
         deselectAnswer(fields[i]);
       }

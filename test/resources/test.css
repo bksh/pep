@@ -61,7 +61,7 @@ code {
 }
 
 
-[x-pep-send] {
+[data-pep-send] {
   font-weight: bold;
   color: #333;
   cursor: pointer;
@@ -121,5 +121,3 @@ code {
   height: 800px;
   margin-top: 50px;
 }
-
-

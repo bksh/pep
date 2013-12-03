@@ -21,12 +21,13 @@ Pep = (function () {
 
 
   API.attach = function (doc) {
+    docs.push(doc);
     var pepdoc = API.doc(doc);
     flipConditionalClasses(pepdoc, 'pep');
     attachConventions(pepdoc);
     attachSenders(pepdoc);
-    pepdoc.updateBindings();
-    docs.push(doc);
+    API.suspend();
+    pepdoc.updateBindings([], API.resume);
   }
 
 
@@ -37,7 +38,6 @@ Pep = (function () {
       if (docs[i] == doc) { docs.splice(i, 1); } else { i += 1; }
     }
   }
-
 
 
   function flipConditionalClasses(pepdoc, name) {
@@ -83,29 +83,38 @@ Pep = (function () {
   }
 
 
-  // You can either pass a label and a value as separate arguments,
-  // or a hash of label/values as a single argument.
+  // You pass a hash of label/values, and an optional callback function
+  // that will be invoked when all the data bindings have been evaluated
+  // in all attached documents.
   //
-  // The callback, if provided, will be invoked when all of the bindings
-  // have been executed.
-  //
-  API.setData = function (label, value, callback) {
-    // var delta = {};
-    // if (arguments.length == 2) {
-    //   delta[label] = value;
-    // } else if (arguments.length == 1) {
-    //   delta = arguments[0];
-    // }
-    // for (var k in delta) { if (delta.hasOwnProperty(k)) {
-    //   data[k] = delta[k];
-    // } }
-    if (typeof value == 'undefined' || value === null) {
-      delete(data[label]);
-    } else {
-      data[label] = value;
+  API.setData = function (delta, callback) {
+    var labels = [];
+    for (var label in delta) {
+      if (delta.hasOwnProperty(label)) {
+        var value = delta[label];
+        if (typeof value == 'undefined' || value === null) {
+          delete(data[label]);
+        } else {
+          data[label] = value;
+        }
+        labels.push(label);
+      }
+    }
+    var docCount = docs.length;
+    var pop = function () {
+      docCount -= 1;
+      if (!docCount) {
+        if (typeof callback == 'function') {
+          callback();
+        }
+      }
     }
     for (var i = 0, ii = docs.length; i < ii; ++i) {
-      Pep.doc(docs[i]).updateBindings(label, callback);
+      // FIXME: updateBindings should accept array of labels and
+      // process them all simultaneously.
+      for (var j = 0, jj = labels.length; j < jj; ++j) {
+        Pep.doc(docs[i]).updateBindings(labels[j], pop);
+      }
     }
   }
 
@@ -136,3 +145,28 @@ Pep = (function () {
 
 Pep.Actions = {};
 Pep.Handler = {};
+
+
+// Pep.Console = (function () {
+//   var div = document.createElement('div');
+//   window.addEventListener('load', function () {
+//     document.body.appendChild(div);
+//   });
+//
+//   var entry = function (msg, color) {
+//     var d = document.createElement('div');
+//     d.style.color = color;
+//     d.appendChild(document.createTextNode(msg));
+//     div.appendChild(d);
+//   }
+//
+//   var API = {
+//     log: function (msg) { entry(msg, 'blue'); },
+//     warn: function (msg) { entry(msg, '#F90'); },
+//     error: function (msg) { entry(msg, 'red'); }
+//   }
+//
+//   API.log('PEP CONSOLE STANDS READY.');
+//
+//   return API;
+// })();

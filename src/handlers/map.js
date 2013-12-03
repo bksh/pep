@@ -2,11 +2,11 @@
 //
 // Convention:
 //
-//  <span x-pep-map="41.418916,-81.619663">OverDrive HQ</span>
+//  <span data-pep-map="41.418916,-81.619663">OverDrive HQ</span>
 //
-//  <span x-pep-map="1 OverDrive Way, Garfield Heights, OH">OverDrive HQ</span>
+//  <span data-pep-map="1 OverDrive Way, Garfield Heights, OH">OverDrive HQ</span>
 //
-//  <p x-pep-map>
+//  <p data-pep-map>
 //    1 OverDrive Way,
 //    Garfield Heights,
 //    OH
@@ -15,7 +15,7 @@
 Pep.Handler.Map = function (pepdoc) {
   var actions = {
     trigger: function (sender, receiver) {
-      var geo = receiver.getAttribute('x-pep-map');
+      var geo = receiver.getAttribute('data-pep-map');
       var qs;
       if (!geo) {
         qs = 'q='+encodeURIComponent(receiver.innerText.replace(/\s+/g, ' '));
@@ -29,9 +29,9 @@ Pep.Handler.Map = function (pepdoc) {
       Pep.Generate.popupIframe(receiver, url, popopts);
     }
   }
-  pepdoc.each('[x-pep-map]', function (elem) {
+  pepdoc.each('[data-pep-map]', function (elem) {
     elem.xPepActions = actions;
-    elem.setAttribute('x-pep-send', 'trigger');
+    elem.setAttribute('data-pep-send', 'trigger');
   });
 }
 

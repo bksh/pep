@@ -41,7 +41,9 @@ Pep.Actions.Global = (function () {
         value = (parseFloat(v) - parseFloat(value)) + '';
       }
     }
-    Pep.setData(label, value, callback);
+    var delta = {};
+    delta[label] = value;
+    Pep.setData(delta, callback);
     return true;
   }
 

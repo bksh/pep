@@ -33,8 +33,8 @@ Pep.Document = function (doc) {
   //
   API.senders = function (iterator) {
     var senders = [];
-    API.each('[x-pep-send]', function (sender, index) {
-      var attr = sender.getAttribute('x-pep-send');
+    API.each('[data-pep-send]', function (sender, index) {
+      var attr = sender.getAttribute('data-pep-send');
       var sequence = new Pep.Sequence(sender, attr);
       senders.push(sequence);
       if (typeof iterator == "function") {
@@ -50,14 +50,14 @@ Pep.Document = function (doc) {
     var eq = typeof label != 'undefined' ? '="'+label+'"' : '';
 
     // Bound text:
-    API.each('[x-pep-bind-text'+eq+']', function (bnd) {
-      var k = bnd.getAttribute('x-pep-bind-text');
+    API.each('[data-pep-bind-text'+eq+']', function (bnd) {
+      var k = bnd.getAttribute('data-pep-bind-text');
       bnd.innerHTML = data[k];
     });
 
     // Bound attributes:
-    API.each('[x-pep-bind-attr'+eq+']', function (bnd) {
-      var k = bnd.getAttribute('x-pep-bind-attr');
+    API.each('[data-pep-bind-attr'+eq+']', function (bnd) {
+      var k = bnd.getAttribute('data-pep-bind-attr');
       var v = data[k];
       var attr = 'data-pep-'+k;
       if (v === null || typeof v == 'undefined') {
@@ -68,8 +68,8 @@ Pep.Document = function (doc) {
     });
 
     // Bound display conditions:
-    API.each('[x-pep-bind-show]', function (bnd) {
-      var attr = bnd.getAttribute('x-pep-bind-show');
+    API.each('[data-pep-bind-show]', function (bnd) {
+      var attr = bnd.getAttribute('data-pep-bind-show');
       var condition = new Pep.Sequence.Condition(attr);
       if (!label || condition.testsLabel(label)) {
         bnd.style.display = condition.test() ? '' : 'none';
@@ -85,8 +85,8 @@ Pep.Document = function (doc) {
         if (typeof callback == 'function') { callback(); }
       }
     }
-    API.each('[x-pep-bind]', function (bnd) {
-      sequences.push(new Pep.Sequence(bnd, bnd.getAttribute('x-pep-bind')));
+    API.each('[data-pep-bind]', function (bnd) {
+      sequences.push(new Pep.Sequence(bnd, bnd.getAttribute('data-pep-bind')));
     });
     if (sequenceCount = sequences.length) {
       API.iterate(sequences, function (seq) { seq.execute(label, pop); });

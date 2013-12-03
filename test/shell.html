@@ -46,10 +46,10 @@
         position: absolute;
         background: -webkit-radial-gradient(70% 70%, circle closest-corner, #555, #444);
         border: 1px solid #222;
-        width: 20px;
-        height: 20px;
         left: 50%;
         bottom: 0px;
+        width: 20px;
+        height: 20px;
         margin-left: -10px;
         border-radius: 20px;
         border-bottom-left-radius: 18px;
@@ -65,10 +65,12 @@
         color: #EEF;
         letter-spacing: 0.1em;
       }
-      #instructions, #congrats {
+      .info {
         padding: 20px;
         text-align: center;
       }
+      .hide { display: none; }
+
 
       /* THESE ARE THE SHELL ANIMATIONS WHEN THE GAME IS PLAYED */
       @-webkit-keyframes shuffled1 {
@@ -111,23 +113,23 @@
 <!-- EXAMPLE: START -->
 <div
   id="game"
-  x-pep-bind="
+  data-pep-bind="
     [game=shuffle] class(shuffled) wait(1500)
     [game=won] class(won)
     [!game] class(!shuffled) class(!won)
   "
 >
   <div id="shells">
-    <div id="box1" x-pep-send="class(lift 500ms) wait(500ms) data(!game)">
+    <div id="box1" data-pep-send="class(lift 500ms) wait(500ms) data(!game)">
       <div class="shell"></div>
     </div>
     <div
       id="box2"
-      x-pep-send="
+      data-pep-send="
         [!game=prompt] data(stone=reveal)
         [game=prompt] data(game=won) data(!game)
       "
-      x-pep-bind="
+      data-pep-bind="
         [stone=reveal] class(lift 500ms) wait(500ms) data(!stone)
         [game=won] class(lift 1000ms) wait(500ms)
       "
@@ -135,19 +137,19 @@
       <div class="stone"></div>
       <div class="shell"></div>
     </div>
-    <div id="box3" x-pep-send="class(lift 500ms) wait(500ms) data(!game)">
+    <div id="box3" data-pep-send="class(lift 500ms) wait(500ms) data(!game)">
       <div class="shell"></div>
     </div>
   </div>
   <div
     id="btnPlay"
-    x-pep-send="data(stone=reveal) data(game=shuffle) data(game=prompt)"
-    x-pep-bind-show="[!game]"
+    data-pep-send="data(stone=reveal) data(game=shuffle) data(game=prompt)"
+    data-pep-bind-show="[!game]"
   >PLAY</div>
-  <div id="instructions" x-pep-bind-show="[game=prompt]">
+  <div class="info" data-pep-bind-show="[game=prompt]">
     Click the shell with the stone.
   </div>
-  <div id="congrats" x-pep-bind-show="[game=won]">
+  <div class="info" data-pep-bind-show="[game=won]">
     You found the stone!
   </div>
 </div>

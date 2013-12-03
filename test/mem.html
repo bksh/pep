@@ -54,13 +54,13 @@
 -->
 <div
   class="card"
-  x-pep-send="
+  data-pep-send="
     data(moves=+1) class(turn)
     [!active] data(active=a1)
     [!active^=a] wait(500) data(!active)
     [active=a2] data(matches=~a) data(!active)
   "
-  x-pep-bind="
+  data-pep-bind="
     [!active] class(!turn)
     [matches~=a] class(lock) disable
   "
@@ -68,13 +68,13 @@
 
 <div
   class="card"
-  x-pep-send="
+  data-pep-send="
     data(moves=+1) class(turn)
     [!active] data(active=z1)
     [!active^=z] wait(500) data(!active)
     [active=z2] data(matches=~z) data(!active)
   "
-  x-pep-bind="
+  data-pep-bind="
     [!active] class(!turn)
     [matches~=z] class(lock) disable
   "
@@ -82,13 +82,13 @@
 
 <div
   class="card"
-  x-pep-send="
+  data-pep-send="
     data(moves=+1) class(turn)
     [!active] data(active=z2)
     [!active^=z] wait(500) data(!active)
     [active=z1] data(matches=~z) data(!active)
   "
-  x-pep-bind="
+  data-pep-bind="
     [!active] class(!turn)
     [matches~=z] class(lock) disable
   "
@@ -96,13 +96,13 @@
 
 <div
   class="card"
-  x-pep-send="
+  data-pep-send="
     data(moves=+1) class(turn)
     [!active] data(active=a2)
     [!active^=a] wait(500) data(!active)
     [active=a1] data(matches=~a) data(!active)
   "
-  x-pep-bind="
+  data-pep-bind="
     [!active] class(!turn)
     [matches~=a] class(lock) disable
   "
@@ -110,9 +110,9 @@
 
 <br style="clear: left" />
 
-<div x-pep-bind-show="[moves]">
-  <span x-pep-bind-text="moves">0</span> moves
-  <span x-pep-bind-show="[matches~=a][matches~=z]">- you wins!</span>
+<div data-pep-bind-show="[moves]">
+  <span data-pep-bind-text="moves">0</span> moves
+  <span data-pep-bind-show="[matches~=a][matches~=z]">- you wins!</span>
 </div>
 <!-- EXAMPLE: END -->
 
