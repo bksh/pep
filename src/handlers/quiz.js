@@ -97,8 +97,7 @@ Pep.Handler.Quiz.Proxy = function (pepdoc, quizForm) {
     Pep.Generate.popupIframe(
       sender,
       { fragment: p.quizHTML, stylesheet: p.quizStylesheet },
-      { className: 'pep-popup-quiz', closeBtn: true },
-      Pep.attach
+      { className: 'pep-popup-quiz', closeBtn: true }
     );
   }
 

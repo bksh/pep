@@ -3,16 +3,16 @@
   <head>
     <title>Pep test - Memory game</title>
     <!-- This is what you would include for Pep. -->
-    <script src="../src/core/pep.js"></script>
-    <script src="../src/core/sequence.js"></script>
-    <script src="../src/core/document.js"></script>
-    <script src="../src/core/actions.js"></script>
-    <script src="../src/core/generate.js"></script>
+    <script data-pep src="../src/core/pep.js"></script>
+    <script data-pep src="../src/core/sequence.js"></script>
+    <script data-pep src="../src/core/document.js"></script>
+    <script data-pep src="../src/core/actions.js"></script>
+    <script data-pep src="../src/core/generate.js"></script>
+    <script data-pep>window.onload = function () { Pep.attach(document); };</script>
 
     <!-- Resources to enable the test - not relevant for implementations.-->
     <link rel="stylesheet" href="resources/test.css" />
     <script src="resources/conventions.js"></script>
-    <script>window.onload = function () { Pep.attach(document); };</script>
 
     <style>
       .card {

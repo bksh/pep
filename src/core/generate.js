@@ -63,7 +63,7 @@ Pep.Generate.popup = function (elem, contents, options) {
 }
 
 
-// Generates an iframe with the given content, and calls onReady when loaded.
+// Generates an iframe with the given content.
 //
 // `parentNode` is the element to which the iframe will be appended. This
 // must be in the DOM tree of a document, because an iframe can only be loaded
@@ -78,13 +78,10 @@ Pep.Generate.popup = function (elem, contents, options) {
 //      (additional options here: title, stylesheet)
 //  - if a string, treated as if { url: string }
 //
-// `onReady` is a callback that gets the `load` event object IF AND ONLY IF
-// the iframe is on this domain.
-//
 // When supplying an external URL, it's best to use a protocol-relative URL
 // if possible -- eg: //google.com rather than http://google.com.
 //
-Pep.Generate.iframe = function (parentNode, contents, onReady) {
+Pep.Generate.iframe = function (parentNode, contents) {
   var doc = parentNode.ownerDocument;
   if (typeof contents == 'string') {
     contents = { url: contents };
@@ -97,42 +94,15 @@ Pep.Generate.iframe = function (parentNode, contents, onReady) {
 
   parentNode.appendChild(fr);
 
-  // Set up an event when the frame is loaded (if on same domain).
-  if (!contents.url || !contents.url.match(/^(\w+:)?\/\//)) {
-    var onLoad = function (evt) {
-      //console.log('html', fr.contentDocument.documentElement.innerHTML);
-      fr.onload = null;
-      if (typeof onReady == 'function') { onReady(fr.contentDocument, fr); }
-    }
-    fr.onload = onLoad;
-  }
-
   // Set the frame src.
   if (contents.url) {
+    if (!location.href.match(/^http/) && contents.url.match(/^\/\/\w+/)) {
+      contents.url = 'http:'+contents.url;
+    }
     fr.src = contents.url;
   } else {
     if (contents.fragment) {
-      var baseElementHTML = '';
-      var baseElement = doc.querySelector('base');
-      if (baseElement) {
-        var surrogate = doc.createElement('div');
-        surrogate.appendChild(baseElement.cloneNode(true));
-        baseElementHTML = surrogate.innerHTML;
-      }
-      var ssHref = contents.stylesheet;
-      contents.html = [
-        '<!DOCTYPE html>',
-        '<html>',
-          '<head>',
-            baseElementHTML,
-            '<title>'+(contents.title || 'Popup')+'</title>',
-            ssHref ? '<link rel="stylesheet" href="'+ssHref+'" />' : '',
-          '</head>',
-          '<body>',
-            contents.fragment,
-          '</body>',
-        '</html>'
-      ].join('\n');
+      contents.html = Pep.Generate.htmlFromFragment(doc, contents);
     }
     if (navigator.userAgent.match(/Gecko\/\d/)) {
       fr.contentDocument.open('text/html', 'replace');
@@ -148,16 +118,52 @@ Pep.Generate.iframe = function (parentNode, contents, onReady) {
 }
 
 
+Pep.Generate.htmlFromFragment = function (doc, contents) {
+  var baseElementHTML = '';
+  var baseElement = doc.querySelector('base');
+  if (baseElement) {
+    var surrogate = doc.createElement('div');
+    surrogate.appendChild(baseElement.cloneNode(true));
+    baseElementHTML = surrogate.innerHTML;
+  } else {
+    baseElementHTML = '<base href="'+doc.location.href+'" />';
+  }
+  var ssHref = contents.stylesheet;
+  var scriptSurrogate = doc.createElement('div');
+  var pepScripts = Array.prototype.slice.apply(
+    doc.querySelectorAll('script[data-pep]')
+  );
+  while (pepScripts.length) {
+    scriptSurrogate.appendChild(pepScripts.shift().cloneNode(true));
+  }
+  return [
+    '<!DOCTYPE html>',
+    '<html>',
+      '<head>',
+        baseElementHTML,
+        '<title>'+(contents.title || 'Popup')+'</title>',
+        ssHref ? '<link rel="stylesheet" href="'+ssHref+'" />' : '',
+        scriptSurrogate.innerHTML,
+      '</head>',
+      '<body>',
+        contents.fragment,
+      '</body>',
+    '</html>'
+  ].join('\n');
+}
+
+
+
 // A convenience method to create a popup that contains an iframe.
 //
-// In this case, `contents` and `onReady` are what you would pass to the
+// In this case, `contents` is what you would pass to the
 // iframe method, and `elem` and `options` are what you would pass to
 // the popup method.
 //
-Pep.Generate.popupIframe = function (elem, contents, options, onReady) {
+Pep.Generate.popupIframe = function (elem, contents, options) {
   var cntr = elem.ownerDocument.createElement('div');
   cntr.className = 'pep-popup-x-cntr';
   var pop = Pep.Generate.popup(elem, cntr, options);
-  Pep.Generate.iframe(cntr, contents, onReady);
+  Pep.Generate.iframe(cntr, contents);
   return pop;
 }

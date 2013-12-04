@@ -12,7 +12,8 @@ Pep.Handler.Frame = function (pepdoc) {
     elem.xPepActions = {
       trigger: function () {
         var url = elem.getAttribute('data-pep-frame');
-        Pep.Generate.popupIframe(elem, url, { className: 'pep-popup-frame' });
+        var popopts = { className: 'pep-popup-frame', closeBtn: true };
+        Pep.Generate.popupIframe(elem, url, popopts);
       }
     };
     elem.setAttribute('data-pep-send', 'trigger');
