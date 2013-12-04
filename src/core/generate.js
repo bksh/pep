@@ -16,10 +16,10 @@ Pep.Generate = {};
 Pep.Generate.popup = function (elem, contents, options) {
   options = options || {};
   var doc = elem.ownerDocument;
-  var film = document.createElement('div');
+  var film = doc.createElement('div');
   film.className = 'pep-popup-x-film';
   doc.body.appendChild(film);
-  var pop = document.createElement('div');
+  var pop = doc.createElement('div');
   pop.classList.add('pep-popup');
   if (options.className) { pop.classList.add(options.className); }
   film.appendChild(pop);
@@ -104,14 +104,9 @@ Pep.Generate.iframe = function (parentNode, contents) {
     if (contents.fragment) {
       contents.html = Pep.Generate.htmlFromFragment(doc, contents);
     }
-    if (navigator.userAgent.match(/Gecko\/\d/)) {
-      fr.contentDocument.open('text/html', 'replace');
-      fr.contentDocument.write(contents.html);
-      fr.contentDocument.close();
-    } else {
-      fr.contentWindow['pepGenData'] = contents.html;
-      fr.src = 'javascript:window["pepGenData"]';
-    }
+    fr.contentDocument.open('text/html', 'replace');
+    fr.contentDocument.write(contents.html);
+    fr.contentDocument.close();
   }
 
   return fr;
@@ -161,7 +156,11 @@ Pep.Generate.htmlFromFragment = function (doc, contents) {
 // the popup method.
 //
 Pep.Generate.popupIframe = function (elem, contents, options) {
-  var cntr = elem.ownerDocument.createElement('div');
+  var doc = elem.ownerDocument;
+  if (typeof contents != 'string' && contents.fragment) {
+    contents = { html: Pep.Generate.htmlFromFragment(doc, contents) };
+  }
+  var cntr = doc.createElement('div');
   cntr.className = 'pep-popup-x-cntr';
   var pop = Pep.Generate.popup(elem, cntr, options);
   Pep.Generate.iframe(cntr, contents);

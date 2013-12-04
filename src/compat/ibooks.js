@@ -2,7 +2,11 @@
 // doesn't work on iBooks/Mac.
 //if (typeof window.BKEpubLocation !== 'undefined') {
 
-if (true) {
+// FIXME: not-readium? Ugh
+if (
+  typeof navigator.epubReadingSystem != 'undefined' &&
+  navigator.epubReadingSystem.name != 'Readium'
+) {
 
   (function () {
     window.onload = function () { Pep.attach(document); }
