@@ -138,6 +138,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     p.scoreboard.style.display = 'none';
 
     // Kick this thing off.
+    resetScore();
     goToCard(0);
   }
 
@@ -166,15 +167,20 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   }
 
 
-  function reset() {
+  function resetScore() {
     p.score = { total: 0, correct: 0 };
+  }
+
+
+  function reset() {
+    resetScore();
     pepdoc.each('.pep-quiz-selected', deselectAnswer);
     // TODO: revert values of all fields
   }
 
 
   function checkAnswers() {
-    p.score = { total: 0, correct: 0 };
+    resetScore();
     var fsets = quizForm.querySelectorAll('fieldset');
     if (!fsets.length) { fsets = [quizForm]; }
     pepdoc.iterate(fsets, checkAnswer);
@@ -183,17 +189,15 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
 
   function checkAnswer(fset) {
+    var answers = fset.querySelectorAll('[data-pep-quiz-answer]');
+    var answer = answers[0];
+    if (!answer) { return; }
     p.score.total += 1;
     var correctIf = function (bool) {
       p.score.correct += bool ? 1 : 0;
       fset.setAttribute('data-pep-quiz-marked', bool ? 'correct' : 'incorrect');
     }
-    var answers = fset.querySelectorAll('[data-pep-quiz-answer]');
-    var answer = answers[0];
-    if (!answer) {
-      console.warn('No answer for field set:', fset);
-      correctIf(false);
-    } else if (hasSelectTrigger(answer)) {
+    if (hasSelectTrigger(answer)) {
       correctIf(answer.classList.contains('pep-quiz-selected'));
     } else if (answer.type == 'radio') {
       var fields = fset.querySelectorAll('input[type="radio"]:checked');
@@ -321,8 +325,8 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
 
 
     check: function (sender) {
-      // TODO
-      alert('Quiz action: check');
+      var qElem = questionFor(sender);
+      checkAnswer(qElem);
     },
 
 
