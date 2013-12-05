@@ -83,9 +83,7 @@ Pep.Generate.popup = function (elem, contents, options) {
 //
 Pep.Generate.iframe = function (parentNode, contents) {
   var doc = parentNode.ownerDocument;
-  if (typeof contents == 'string') {
-    contents = { url: contents };
-  }
+  contents = Pep.Generate.normalizeIframeContents(doc, contents);
 
   // Create the frame.
   var fr = doc.createElement('iframe');
@@ -96,20 +94,35 @@ Pep.Generate.iframe = function (parentNode, contents) {
 
   // Set the frame src.
   if (contents.url) {
-    if (!location.href.match(/^http/) && contents.url.match(/^\/\/\w+/)) {
-      contents.url = 'http:'+contents.url;
-    }
     fr.src = contents.url;
   } else {
-    if (contents.fragment) {
-      contents.html = Pep.Generate.htmlFromFragment(doc, contents);
-    }
     fr.contentDocument.open('text/html', 'replace');
     fr.contentDocument.write(contents.html);
     fr.contentDocument.close();
   }
 
   return fr;
+}
+
+
+Pep.Generate.normalizeIframeContents = function (doc, contents) {
+  // Treat a string as a URL
+  if (typeof contents == 'string') {
+    contents = { url: contents };
+  }
+
+  // If we're on a weird protocol like file:// or chrome-extension://,
+  // we can't use protocol-relative URLS like //youtube.com/foo/bar
+  if (!location.href.match(/^http/) && contents.url.match(/^\/\/\w+/)) {
+    contents.url = 'http:'+contents.url;
+  }
+
+  // If we have a fragment of HTML, wrap <html> tags around it
+  if (contents.fragment) {
+    contents = { html: Pep.Generate.htmlFromFragment(doc, contents) }
+  }
+
+  return contents;
 }
 
 
