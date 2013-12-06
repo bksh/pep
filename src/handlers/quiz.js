@@ -40,7 +40,7 @@
 //  - reset
 //
 Pep.Handler.Quiz = function (pepdoc) {
-  pepdoc.each('.pep-quiz', function (quizForm) {
+  pepdoc.each('form[data-pep-quiz]', function (quizForm) {
     // We replace the quiz form with a button that acts as a proxy
     // to invoke the actual quiz form inside an iframe. We can tell
     // whether it's the actual quiz form using the 'data-pep-quiz-state'

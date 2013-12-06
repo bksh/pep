@@ -113,7 +113,11 @@ Pep.Generate.normalizeIframeContents = function (doc, contents) {
 
   // If we're on a weird protocol like file:// or chrome-extension://,
   // we can't use protocol-relative URLS like //youtube.com/foo/bar
-  if (!location.href.match(/^http/) && contents.url.match(/^\/\/\w+/)) {
+  if (
+    !location.href.match(/^http/) &&
+    contents.url &&
+    contents.url.match(/^\/\/\w+/)
+  ) {
     contents.url = 'http:'+contents.url;
   }
 
