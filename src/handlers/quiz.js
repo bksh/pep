@@ -195,7 +195,13 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     p.score.total += 1;
     var correctIf = function (bool) {
       p.score.correct += bool ? 1 : 0;
-      fset.setAttribute('data-pep-quiz-marked', bool ? 'correct' : 'incorrect');
+      var str = bool ? 'correct' : 'incorrect';
+      fset.setAttribute('data-pep-quiz-marked', str);
+      if (fset.id) {
+        var data = {};
+        data['quiz-answer-'+fset.id] = str;
+        Pep.setData(data);
+      }
     }
     if (hasSelectTrigger(answer)) {
       correctIf(answer.classList.contains('pep-quiz-selected'));

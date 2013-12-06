@@ -169,7 +169,7 @@ Pep.Sequence.Condition = function (conditionString) {
       "CONDITION: %s %s %s = %s => %s",
       assn.label,
       assn.operation,
-      assn.value,
+      assn.value || '',
       result,
       assn.negation ? !result : result
     );

@@ -27,7 +27,7 @@ Pep = (function () {
     attachConventions(pepdoc);
     attachSenders(pepdoc);
     API.suspend();
-    pepdoc.updateBindings([], API.resume);
+    pepdoc.updateBindings(null, API.resume);
   }
 
 
