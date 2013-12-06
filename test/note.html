@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pep test - Note</title>
+
+    <!-- This is what you would include for Pep. -->
+    <script data-pep src="../src/core/pep.js"></script>
+    <script data-pep src="../src/core/sequence.js"></script>
+    <script data-pep src="../src/core/document.js"></script>
+    <script data-pep src="../src/core/actions.js"></script>
+    <script data-pep src="../src/core/generate.js"></script>
+    <script data-pep="note" src="../src/handlers/note.js"></script>
+    <script data-pep>window.onload = function () { Pep.attach(document); };</script>
+    <style>.if-pep-note { display: none; }</style>
+
+    <!-- Resources to enable the test - not relevant for implementations.-->
+    <link rel="stylesheet" href="resources/test.css" />
+    <script src="resources/conventions.js"></script>
+  </head>
+  <body>
+    <h1>Pep test - Note</h1>
+    <p>
+      Creating a note is quite simple:
+    </p>
+    <div class="convention">
+<!-- CONVENTION:STARTS-->
+<a href="#note" data-pep-note>Click to read the footnote</a>
+<aside id="note">This is the footnote.</aside>
+<!-- CONVENTION:ENDS -->
+    </div>
+    <p>
+      If you add <code>data-pep-note-title</code> to the first
+      element within the aside, it will be treated as the note title
+      and may be styled accordingly by Pep.
+    </p>
+    <div class="convention">
+<!-- CONVENTION:STARTS-->
+<a href="#dfw" data-pep-note>A note</a>
+<aside id="dfw">
+<p data-pep-note-title>David Foster Wallace says...</p>
+<p>
+  Sorry about this phrase: I hate this phrase, too. This happens to be one of
+  those very rare times when "historical context" is the phrase to use and
+  there is no equivalent phrase that isn't even worse. (I actually tried
+  "lexico-temporal backdrop" in one of the middle drafts, which I think you'll
+  agree is not preferable.)
+</p>
+
+<p><strong><center>
+  INTERPOLATION
+</center></strong></p>
+
+<p>
+  The above &para; is motivated by the fact that this reviewer almost always
+  sneers and/or winces when he sees "historical context" deployed in a piece
+  of writing and thus hopes to head off any potential sneers/winces from the
+    reader here, especially in an article about felicitous usage.
+</p>
+</aside>
+<!-- CONVENTION:ENDS -->
+    </div>
+
+    <p>
+      Perhaps the most awesome thing about Pep notes is that you can
+      style them. Use the <code>data-pep-note-stylesheet</code> attribute
+      to point at a local stylesheet, like this:
+    </p>
+
+    <div class="convention">
+<!-- CONVENTION:STARTS-->
+<a
+  href="#black-note"
+  data-pep-note
+  data-pep-note-stylesheet="resources/note-black.css"
+>(pssst!)</a>
+<aside id="black-note">
+  <p>A reference to the Rolling Stones:</p>
+  <blockquote>
+    <p>I see a red door and I want to paint it black.</p>
+  </blockquote>
+</aside>
+<!-- CONVENTION:ENDS -->
+    </div>
+
+  </body>
+  <script>InspectConventions();</script>
+</html>

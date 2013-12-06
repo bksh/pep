@@ -9,7 +9,11 @@ if (
 ) {
 
   (function () {
-    window.onload = function () { Pep.attach(document); }
+    document.addEventListener(
+      'DOMContentLoaded',
+      function () { Pep.attach(document); },
+      true
+    );
 
     // We store the base URL of THIS script so that we can
     // find the address of the popup.
@@ -43,10 +47,26 @@ if (
       } else {
         html = contents.html;
       }
-      var qs = btoa(html);
-      var link = document.createElement('a');
+
+      // FIXME: WARNING: THIS WILL FAIL IF HTML CONTAINS ANY
+      // UNICODE CHARACTERS. Maybe need to double-encode it
+      // with encodeURIComponent?
+      var qs = window.btoa(html);
+      var link = doc.createElement('a');
       link.href = baseURL+'popup.html?'+qs;
       link.click();
+    }
+
+
+    if (typeof Pep.Handler.Note != 'undefined') {
+      Pep.Handler.Note.handleNote = function (elem, aside) {
+        if (elem.getAttribute('data-pep-note-stylesheet')) {
+          Pep.Handler.Note.popupOnTrigger(elem, aside);
+        } else {
+          elem.setAttribute('epub:type', 'noteref');
+          aside.setAttribute('epub:type', 'footnote');
+        }
+      }
     }
   })();
 

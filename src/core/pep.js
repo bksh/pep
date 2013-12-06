@@ -152,6 +152,7 @@ Pep.Handler = {};
 //   window.addEventListener('load', function () {
 //     document.body.appendChild(div);
 //   });
+//   div.style.fontSize = '10px';
 //
 //   var entry = function (msg, color) {
 //     var d = document.createElement('div');
