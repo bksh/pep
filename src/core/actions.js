@@ -130,7 +130,13 @@ Pep.Actions.Element = (function () {
   //
   //
   API['enable'] = function (sender, receiver, args) {
-    // TODO
+    receiver.removeAttribute('disabled');
+  }
+
+
+  API['play'] = function (sender, receiver, args) {
+    receiver.setAttribute('src', receiver.src);
+    receiver.play();
   }
 
 
