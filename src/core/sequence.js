@@ -220,24 +220,24 @@ Pep.Sequence.Action = function (name, argString, selector, sender) {
     if (typeof selector == 'string') {
       return sender.ownerDocument.querySelector(selector);
     }
-    if (sender.xPepActions) {
-      return sender;
-    }
-    var rec = activeAncestor(sender.parentNode);
-    if (rec) {
-      return rec;
+    var cursor = sender;
+    while (cursor) {
+      if (actionFor(cursor, API['name'])) {
+        return cursor;
+      } else {
+        cursor = cursor.parentNode;
+      }
     }
     return sender;
   }
 
 
-  function activeAncestor(cursor) {
-    while (cursor) {
-      if (cursor.xPepActions) {
-        return cursor;
-      } else {
-        cursor = cursor.parentNode;
-      }
+  function actionFor(elem, actn) {
+    if (typeof Pep.Actions.Element[actn] == 'function') {
+      return Pep.Actions.Element[actn];
+    }
+    if (elem.xPepActions && typeof elem.xPepActions[actn] == 'function') {
+      return elem.xPepActions[actn];
     }
   }
 
@@ -246,6 +246,7 @@ Pep.Sequence.Action = function (name, argString, selector, sender) {
     var rcvr = API.receiver();
     var actn = API['name'];
     var args = API['arguments'];
+    var fn = actionFor(rcvr, actn) || Pep.Actions.Global[actn];
     console.log(
       "PEP SEND: %s -> %s%s FROM %s",
       (rcvr ?  rcvr.tagName+(rcvr.id ? '#'+rcvr.id : '') : '[global]'),
@@ -253,14 +254,6 @@ Pep.Sequence.Action = function (name, argString, selector, sender) {
       args ? ' PASSING '+args : '',
       sender.id ? '#'+sender.id : sender.tagName
     );
-    var fn;
-    if (rcvr.xPepActions && typeof rcvr.xPepActions[actn] == 'function') {
-      fn = rcvr.xPepActions[actn];
-    } else if (typeof Pep.Actions.Element[actn] == 'function') {
-      fn = Pep.Actions.Element[actn];
-    } else if (typeof Pep.Actions.Global[actn] == 'function') {
-      fn = Pep.Actions.Global[actn];
-    }
     if (fn) {
       var result = fn(sender, rcvr, args, callback);
       if (result !== true) { callback(); }
