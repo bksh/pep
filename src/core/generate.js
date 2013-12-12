@@ -111,14 +111,8 @@ Pep.Generate.normalizeIframeContents = function (doc, contents) {
     contents = { url: contents };
   }
 
-  // If we're on a weird protocol like file:// or chrome-extension://,
-  // we can't use protocol-relative URLS like //youtube.com/foo/bar
-  if (
-    !location.href.match(/^http/) &&
-    contents.url &&
-    contents.url.match(/^\/\/\w+/)
-  ) {
-    contents.url = 'http:'+contents.url;
+  if (contents.url) {
+    contents.url = Pep.Generate.adjustURL(contents.url);
   }
 
   // If we have a fragment of HTML, wrap <html> tags around it
@@ -127,6 +121,17 @@ Pep.Generate.normalizeIframeContents = function (doc, contents) {
   }
 
   return contents;
+}
+
+
+// If we're on a weird protocol like file:// or chrome-extension://,
+// we can't use protocol-relative URLS like //youtube.com/foo/bar
+//
+Pep.Generate.adjustURL = function (url) {
+  if (!location.href.match(/^http/) && url.match(/^\/\/\w+/)) {
+    url = 'http:'+url;
+  }
+  return url;
 }
 
 

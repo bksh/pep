@@ -9,11 +9,8 @@ if (
 ) {
 
   (function () {
-    document.addEventListener(
-      'DOMContentLoaded',
-      function () { Pep.attach(document); },
-      true
-    );
+    var pepper = function () { Pep.attach(document); }
+    document.addEventListener('DOMContentLoaded', pepper, true);
 
     // We store the base URL of THIS script so that we can
     // find the address of the popup.
@@ -31,30 +28,38 @@ if (
     //
     Pep.Generate.popupIframe = function (elem, contents, options) {
       var doc = elem.ownerDocument;
-      var html;
-      if (typeof contents == 'string') {
-        contents = { url: contents };
-      }
-      if (contents.url) {
-        contents.fragment = [
-          '<h1>External content unavailable</h1>',
-          '<p>Unfortunately we cannot load <code>'+contents.url+'</code>',
-          'because content from external websites is disallowed by iBooks.</p>'
-        ].join('\n');
-      }
-      if (contents.fragment) {
-        html = Pep.Generate.htmlFromFragment(doc, contents);
-      } else {
-        html = contents.html;
-      }
-
-      // FIXME: WARNING: THIS WILL FAIL IF HTML CONTAINS ANY
-      // UNICODE CHARACTERS. Maybe need to double-encode it
-      // with encodeURIComponent?
-      var qs = window.btoa(html);
       var link = doc.createElement('a');
-      link.href = baseURL+'popup.html?'+qs;
+      contents = Pep.Generate.normalizeIframeContents(doc, contents);
+      if (contents.url) {
+        // contents.fragment = [
+        //   '<h1>External content unavailable</h1>',
+        //   '<p>Unfortunately we cannot load <code>'+contents.url+'</code>',
+        //   'because content from external websites is disallowed by iBooks.</p>'
+        // ].join('\n');
+        link.setAttribute('target', '_blank');
+        link.href = contents.url;
+        // TMP FOR TESTING
+        //elem.parentNode.insertBefore(doc.createTextNode(contents.url), elem);
+      } else {
+        var html;
+        if (contents.fragment) {
+          html = Pep.Generate.htmlFromFragment(doc, contents);
+        } else {
+          html = contents.html;
+        }
+        // FIXME: WARNING: THIS WILL FAIL IF HTML CONTAINS ANY
+        // UNICODE CHARACTERS. Maybe need to double-encode it
+        // with encodeURIComponent?
+        link.href = baseURL+'popup.html?'+window.btoa(html);
+      }
       link.click();
+    }
+
+
+    // We *always* turn protocol-relative URLs into http URLs.
+    Pep.Generate.adjustURL = function (url) {
+      if (url.match(/^\/\/\w+/)) { url = 'http:'+url; }
+      return url;
     }
 
 
@@ -62,6 +67,8 @@ if (
       Pep.Handler.Note.handleNote = function (elem, aside) {
         if (elem.getAttribute('data-pep-note-stylesheet')) {
           Pep.Handler.Note.popupOnTrigger(elem, aside);
+          elem.removeAttribute('epub:type');
+          aside.removeAttribute('epub:type');
         } else {
           elem.setAttribute('epub:type', 'noteref');
           aside.setAttribute('epub:type', 'footnote');
