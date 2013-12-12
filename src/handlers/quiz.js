@@ -184,7 +184,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     var fsets = quizForm.querySelectorAll('fieldset');
     if (!fsets.length) { fsets = [quizForm]; }
     pepdoc.iterate(fsets, checkAnswer);
-    publishScore();
+    //publishScore();
   }
 
 
@@ -202,6 +202,7 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
         data['quiz-answer-'+fset.id] = str;
         Pep.setData(data);
       }
+      publishScore();
     }
     if (hasSelectTrigger(answer)) {
       correctIf(answer.classList.contains('pep-quiz-selected'));
