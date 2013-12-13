@@ -136,15 +136,7 @@ Pep.Generate.adjustURL = function (url) {
 
 
 Pep.Generate.htmlFromFragment = function (doc, contents) {
-  var baseElementHTML = '';
-  var baseElement = doc.querySelector('base');
-  if (baseElement) {
-    var surrogate = doc.createElement('div');
-    surrogate.appendChild(baseElement.cloneNode(true));
-    baseElementHTML = surrogate.innerHTML;
-  } else {
-    baseElementHTML = '<base href="'+doc.location.href+'" />';
-  }
+  var baseElementHTML = Pep.Generate.baseElementHTMLForDocument(doc);
   var ssHref = contents.stylesheet;
   var scriptSurrogate = doc.createElement('div');
   var pepScripts = Array.prototype.slice.apply(
@@ -157,7 +149,7 @@ Pep.Generate.htmlFromFragment = function (doc, contents) {
     '<!DOCTYPE html>',
     '<html>',
       '<head>',
-        baseElementHTML,
+        baseElementHTML ? baseElementHTML : '',
         '<title>'+(contents.title || 'Popup')+'</title>',
         ssHref ? '<link rel="stylesheet" href="'+ssHref+'" />' : '',
         scriptSurrogate.innerHTML,
@@ -169,6 +161,19 @@ Pep.Generate.htmlFromFragment = function (doc, contents) {
   ].join('\n');
 }
 
+
+Pep.Generate.baseElementHTMLForDocument = function (doc) {
+  var baseElementHTML = '';
+  var baseElement = doc.querySelector('base');
+  if (baseElement) {
+    var surrogate = doc.createElement('div');
+    surrogate.appendChild(baseElement.cloneNode(true));
+    baseElementHTML = surrogate.innerHTML;
+  } else {
+    baseElementHTML = '<base href="'+doc.location.href+'" />';
+  }
+  return baseElementHTML;
+}
 
 
 // A convenience method to create a popup that contains an iframe.

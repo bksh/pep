@@ -47,19 +47,29 @@ if (
         } else {
           html = contents.html;
         }
-        // FIXME: WARNING: THIS WILL FAIL IF HTML CONTAINS ANY
-        // UNICODE CHARACTERS. Maybe need to double-encode it
-        // with encodeURIComponent?
-        link.href = baseURL+'popup.html?'+window.btoa(html);
+        var encodedHTML = btoa(unescape(encodeURIComponent(html)));
+        link.href = baseURL+'popup.html?'+encodedHTML;
       }
       link.click();
     }
 
 
-    // We *always* turn protocol-relative URLs into http URLs.
+    // For iBooks, We *always* turn protocol-relative URLs into http URLs.
+    //
     Pep.Generate.adjustURL = function (url) {
       if (url.match(/^\/\/\w+/)) { url = 'http:'+url; }
       return url;
+    }
+
+
+    // For iBooks, we need to set the base href in the popup to use
+    // the ibooksimg:// protocol if (and only if) it is currently on
+    // the ibooks:// protocol.
+    //
+    var _baseElementHTMLForDocument = Pep.Generate.baseElementHTMLForDocument;
+    Pep.Generate.baseElementHTMLForDocument = function (doc) {
+      var baseElementHTML = _baseElementHTMLForDocument(doc);
+      return baseElementHTML.replace(/ibooks:/, 'ibooksimg:');
     }
 
 
