@@ -80,8 +80,14 @@ if (
           elem.removeAttribute('epub:type');
           aside.removeAttribute('epub:type');
         } else {
+          // Oddly, iBooks/Mac looks for 'epub:type' on the noteref and the
+          // proper namespaced 'type' attribute on the aside. iBooks/iOS seems
+          // to use the namespaced type attribute only.
+          var epubNS = 'http://www.idpf.org/2007/ops'
           elem.setAttribute('epub:type', 'noteref');
           aside.setAttribute('epub:type', 'footnote');
+          elem.setAttributeNS(epubNS, 'type', 'noteref');
+          aside.setAttributeNS(epubNS, 'type', 'footnote');
         }
       }
     }
