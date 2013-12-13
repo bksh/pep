@@ -9,9 +9,6 @@ if (
 ) {
 
   (function () {
-    var pepper = function () { Pep.attach(document); }
-    document.addEventListener('DOMContentLoaded', pepper, true);
-
     // We store the base URL of THIS script so that we can
     // find the address of the popup.
     var baseURL = (function () {

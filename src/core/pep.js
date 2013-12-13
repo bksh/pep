@@ -171,3 +171,14 @@ Pep.Handler = {};
 //
 //   return API;
 // })();
+
+
+// IGNITION!
+(function () {
+  var pepper = function () { Pep.attach(document); }
+  if (document.readyState == 'loading') {
+    document.addEventListener('DOMContentLoaded', pepper, true);
+  } else {
+    setTimeout(pepper, 0);
+  }
+})();

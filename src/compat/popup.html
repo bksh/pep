@@ -1,6 +1,5 @@
 <script>
   document.open('text/html', 'replace');
   document.write(decodeURIComponent(escape(atob(location.search.slice(1)))));
-  document.write('<script>if (Pep) { Pep.attach(document); }<'+'/script>');
   document.close();
 </script>

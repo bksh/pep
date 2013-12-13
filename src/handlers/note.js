@@ -38,7 +38,7 @@ Pep.Handler.Note.DEFAULT_STYLESHEET = 'data:text/css;base64,'+btoa([
     'line-height: 1.4;',
     'font-family: Georgia, serif;',
   '}',
-  '[data-pep-note-title] {',
+  '.note-title {',
     'line-height: 2;',
     'font-family: Helvetica Neue, sans-serif;',
     'font-weight: bold;',

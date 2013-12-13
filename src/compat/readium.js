@@ -2,9 +2,6 @@
 if (top.document.querySelector('#readium-book-view-el')) {
 
   (function () {
-    window.onload = function () { Pep.attach(document) }
-
-
     Pep.Generate.popup = function (elem, contents, options) {
       options = options || {};
       var doc = top.document;
