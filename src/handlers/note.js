@@ -16,16 +16,17 @@ Pep.Handler.Note.popupOnTrigger = function (elem, aside) {
   aside.style.display = 'none';
   elem.xPepActions = {
     trigger: function () {
-      var ss = (
-        elem.getAttribute('data-pep-note-stylesheet') ||
-        Pep.Handler.Note.DEFAULT_STYLESHEET
-      );
-      var contents = { fragment: aside.innerHTML, stylesheet: ss };
+      var ss = elem.getAttribute('data-pep-note-stylesheet');
+      if (!ss) {
+        ss = Pep.Handler.Note.DEFAULT_STYLESHEET;
+      }
+      var noteTitle = elem.textContent || elem.innerText || 'Note';
+      var html = '<div class="note-title">'+noteTitle+'</div>'+aside.innerHTML;
+      var contents = { fragment: html, stylesheet: ss };
       var popopts = { className: 'pep-popup-note', closeBtn: true };
       Pep.Generate.popupIframe(elem, contents, popopts);
     }
   };
-  console.log(elem.xPepActions);
   elem.setAttribute('data-pep-send', 'trigger');
 }
 

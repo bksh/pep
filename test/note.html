@@ -28,15 +28,13 @@
 <!-- CONVENTION:ENDS -->
     </div>
     <p>
-      If you add <code>data-pep-note-title</code> to the first
-      element within the aside, it will be treated as the note title
-      and may be styled accordingly by Pep.
+      Here's an example of a longer footnote. Notice that the text of the
+      link is used as the title of the note itself.
     </p>
     <div class="convention">
 <!-- CONVENTION:STARTS-->
-<a href="#dfw" data-pep-note>A note</a>
+<a href="#dfw" data-pep-note>David Foster Wallace says&hellip;</a>
 <aside id="dfw">
-<p data-pep-note-title>David Foster Wallace says...</p>
 <p>
   Sorry about this phrase: I hate this phrase, too. This happens to be one of
   those very rare times when "historical context" is the phrase to use and
@@ -80,6 +78,13 @@
 </aside>
 <!-- CONVENTION:ENDS -->
     </div>
+
+    <p>
+      Notice in the above example that the title of the note has been
+      hidden. When you use a <code>data-pep-note-stylesheet</code> you can
+      style the <code>note-title</code> class however you like, including
+      setting it to <code>display: none</code> as here.
+    </p>
 
   </body>
   <script>InspectConventions();</script>

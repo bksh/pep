@@ -5,3 +5,7 @@ body {
   margin: 10% auto;
   font-family: sans-serif;
 }
+
+.note-title {
+  display: none;
+}
