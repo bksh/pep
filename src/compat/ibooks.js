@@ -1,12 +1,8 @@
 // FIXME: is there a better way to detect iBooks? epubReadingSystem.name
 // doesn't work on iBooks/Mac.
-//if (typeof window.BKEpubLocation !== 'undefined') {
 
-// FIXME: not-readium? Ugh
-if (
-  typeof navigator.epubReadingSystem != 'undefined' &&
-  navigator.epubReadingSystem.name != 'Readium'
-) {
+// if (navigator.epubReadingSystem.name == 'iBooks') {
+if (typeof BKDOMCleanup != 'undefined') {
 
   (function () {
     // We store the base URL of THIS script so that we can

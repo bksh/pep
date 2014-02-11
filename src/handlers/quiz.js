@@ -175,6 +175,9 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
   function reset() {
     resetScore();
     pepdoc.each('.pep-quiz-selected', deselectAnswer);
+    pepdoc.each('[data-pep-quiz-marked]', function (el) {
+      el.removeAttribute('data-pep-quiz-marked');
+    });
     // TODO: revert values of all fields
   }
 
@@ -320,13 +323,18 @@ Pep.Handler.Quiz.Form = function (pepdoc, quizForm) {
     start: function () { goToCard(0); },
 
 
-    select: function (sender) {
+    deselect: function (sender) {
       var qElem = questionFor(sender);
       qElem.removeAttribute('data-pep-quiz-marked');
       var fields = qElem.querySelectorAll('.pep-quiz-selected');
       for (var i = 0, ii = fields.length; i < ii; ++i) {
         deselectAnswer(fields[i]);
       }
+    },
+
+
+    select: function (sender) {
+      quizForm.xPepActions.deselect(sender);
       selectAnswer(sender);
     },
 

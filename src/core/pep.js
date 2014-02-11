@@ -66,6 +66,7 @@ Pep = (function () {
     pepdoc.senders(function (sequence) {
       sequence.sender.onclick = function (evt) {
         evt.preventDefault();
+        evt.stopPropagation();
         if (!API.suspended && !sequence.sender.hasAttribute('disabled')) {
           send(sequence);
         }
